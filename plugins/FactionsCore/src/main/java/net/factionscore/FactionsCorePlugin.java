@@ -4,15 +4,22 @@ import net.factionscore.anticheat.AntiCheatCommand;
 import net.factionscore.anticheat.AntiCheatListener;
 import net.factionscore.anticheat.AntiCheatManager;
 import net.factionscore.anticheat.PunishmentManager;
+import net.factionscore.border.BorderCommand;
+import net.factionscore.border.BorderListener;
+import net.factionscore.border.WorldBorderManager;
 import net.factionscore.buycraft.BuycraftIntegration;
+import net.factionscore.combat.CombatLogListener;
+import net.factionscore.combat.CombatTagManager;
 import net.factionscore.enchant.CustomEnchantRegistry;
 import net.factionscore.enchant.EnchantCombatListener;
 import net.factionscore.enchant.EnchantCommand;
 import net.factionscore.faction.FactionManager;
+import net.factionscore.faction.FactionValueManager;
 import net.factionscore.faction.FactionsAdminCommand;
 import net.factionscore.faction.FactionsCommand;
 import net.factionscore.faction.listener.ClaimProtectionListener;
 import net.factionscore.faction.listener.CombatTuningListener;
+import net.factionscore.faction.listener.SpawnerValueListener;
 import net.factionscore.stacking.MobStackManager;
 import net.factionscore.stacking.SpawnerStackManager;
 import net.factionscore.stacking.StackCommand;
@@ -42,12 +49,14 @@ public final class FactionsCorePlugin extends PluginBase {
         }
 
         factionManager = new FactionManager(database, getConfig());
+        FactionValueManager factionValueManager = new FactionValueManager(database, factionManager, getConfig());
 
-        getServer().getCommandMap().register("factionscore", new FactionsCommand(factionManager));
+        getServer().getCommandMap().register("factionscore", new FactionsCommand(factionManager, factionValueManager));
         getServer().getCommandMap().register("factionscore", new FactionsAdminCommand(factionManager));
 
         getServer().getPluginManager().registerEvents(new ClaimProtectionListener(factionManager, getConfig()), this);
         getServer().getPluginManager().registerEvents(new CombatTuningListener(getConfig()), this);
+        getServer().getPluginManager().registerEvents(new SpawnerValueListener(factionManager, factionValueManager), this);
 
         int regenIntervalTicks = 20 * 60 * 60; // once per in-game hour, matches power.regen-per-hour semantics
         getServer().getScheduler().scheduleRepeatingTask(this, () -> factionManager.applyPowerRegenTick(), regenIntervalTicks, true);
@@ -59,8 +68,19 @@ public final class FactionsCorePlugin extends PluginBase {
 
         MobStackManager mobStackManager = new MobStackManager(getConfig());
         SpawnerStackManager spawnerStackManager = new SpawnerStackManager(getConfig());
-        getServer().getPluginManager().registerEvents(new StackingListener(mobStackManager, spawnerStackManager), this);
+        getServer().getPluginManager().registerEvents(new StackingListener(mobStackManager, spawnerStackManager, factionManager, factionValueManager), this);
         getServer().getCommandMap().register("factionscore", new StackCommand());
+
+        CombatTagManager combatTagManager = new CombatTagManager(getConfig());
+        getServer().getPluginManager().registerEvents(new CombatLogListener(combatTagManager, factionManager, getConfig()), this);
+
+        WorldBorderManager worldBorderManager = new WorldBorderManager(getConfig());
+        BorderListener borderListener = new BorderListener(worldBorderManager, combatTagManager, getConfig());
+        getServer().getPluginManager().registerEvents(borderListener, this);
+        getServer().getCommandMap().register("factionscore", new BorderCommand(worldBorderManager));
+        int borderSweepTicks = getConfig().getInt("border.check-interval-seconds", 5) * 20;
+        // Touches live Player/Level state (teleport), so this must stay on the main thread.
+        getServer().getScheduler().scheduleRepeatingTask(this, borderListener::sweepAll, borderSweepTicks, false);
 
         if (getConfig().getBoolean("anticheat.enabled", true)) {
             PunishmentManager punishmentManager = new PunishmentManager(database, getConfig());

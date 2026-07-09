@@ -15,6 +15,7 @@ public final class Faction {
     private Position home;
     private boolean safezone;
     private boolean warzone;
+    private double spawnerValue;
     private final Map<UUID, FactionRole> members = new ConcurrentHashMap<>();
     private final Map<String, RelationType> relations = new ConcurrentHashMap<>();
 
@@ -56,6 +57,14 @@ public final class Faction {
 
     public void setHome(Position home) {
         this.home = home;
+    }
+
+    public double getSpawnerValue() {
+        return spawnerValue;
+    }
+
+    public void setSpawnerValue(double spawnerValue) {
+        this.spawnerValue = Math.max(0, spawnerValue);
     }
 
     public boolean isSafezone() {

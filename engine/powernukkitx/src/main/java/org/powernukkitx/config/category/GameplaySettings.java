@@ -69,4 +69,6 @@ public class GameplaySettings extends OkaeriConfig {
     boolean muteEmoteAnnouncements = false;
     @Comment("pnx.settings.gameplay.enablemobai")
     boolean enableMobAi = true;
+    @Comment("pnx.settings.gameplay.classiccaves")
+    boolean classicCaves = false;
 }

@@ -12,6 +12,7 @@ import org.powernukkitx.level.generator.stages.LightPopulationStage;
 import org.powernukkitx.level.generator.stages.NormalChunkFeatureStage;
 import org.powernukkitx.level.generator.stages.FinishedStage;
 import org.powernukkitx.level.generator.stages.BiomeMapStage;
+import org.powernukkitx.level.generator.stages.normal.ClassicCaveCarvingStage;
 import org.powernukkitx.level.generator.stages.normal.NormalPopulatorStage;
 import org.powernukkitx.level.generator.stages.normal.NormalSurfaceDataStage;
 import org.powernukkitx.level.generator.stages.normal.NormalSurfaceOverwriteStage;
@@ -33,6 +34,7 @@ public class Normal extends PopulatedGenerator implements BiomedGenerator {
     @Override
     public void stages(GenerateStage.Builder builder) {
         builder.start(Registries.GENERATE_STAGE.get(NormalTerrainStage.NAME));
+        builder.next(Registries.GENERATE_STAGE.get(ClassicCaveCarvingStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(BiomeMapStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceDataStage.NAME));
         builder.next(Registries.GENERATE_STAGE.get(NormalSurfaceOverwriteStage.NAME));

@@ -22,6 +22,12 @@ factions:
   raidable:
     enabled: true
     dtr-loss-opens-raid: false   # this engine doesn't track DTR, power<=0 is used instead
+  value:
+    # "Faction value" is a wealth score separate from power: it's what /f value and /f top
+    # rank factions by. Stacking a spawner increases its contribution proportionally, same as a
+    # stacked spawner is worth more (it produces more).
+    land-per-claim: 500
+    spawner-value: 5000
 
 combat:
   # Bedrock never implemented the Java 1.9+ attack-cooldown/"sword sweep" system,
@@ -78,6 +84,9 @@ anticheat:
     min-humanlike-jitter: 0.02     # near-zero variance in aim deltas over a window => flag
     sample-size: 40
     flag-threshold: 8
+  reach:
+    enabled: true
+    max-blocks: 3.25   # vanilla melee reach is ~3.0; small allowance for network/lag-compensation slack
   punishment:
     flags-to-warn: 3
     flags-to-kick: 8
@@ -107,6 +116,24 @@ updater:
   auto-apply: false   # if true, downloads + swaps jar and requests a restart
   repo: PowerNukkitX/PowerNukkitX
   jar-name: server.jar   # filename of the running server jar, relative to the working directory
+
+border:
+  enabled: true
+  radius:
+    overworld: 60000
+    nether: 60000
+    end: 60000
+  warning-distance: 50       # blocks from the border where the visual wall/popup starts showing
+  check-interval-seconds: 5  # sweep interval that recovers players who got past the border via non-movement means
+  wall:
+    enabled: true
+    patch-radius: 8    # how wide (blocks) the rendered particle patch is, centered on the player
+    spacing: 2         # blocks between particles; higher = fewer particles = cheaper
+
+combatlog:
+  enabled: true
+  tag-duration-seconds: 10
+  block-teleport: true
 
 buycraft:
   enabled: false

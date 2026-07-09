@@ -36,6 +36,9 @@ public final class AntiCheatListener implements Listener {
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player attacker) {
             manager.markInCombat(attacker);
+            if (!event.isCancelled()) {
+                manager.onAttack(attacker, event.getEntity());
+            }
         }
         if (event.getEntity() instanceof Player victim) {
             manager.markInCombat(victim);

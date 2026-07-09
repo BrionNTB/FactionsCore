@@ -30,6 +30,11 @@ commands:
     description: Anti-cheat inspection and management
     usage: "/anticheat help"
     permission: factionscore.command.anticheat
+  worldborder:
+    aliases: [wb, border]
+    description: World border inspection/administration
+    usage: "/worldborder help"
+    permission: factionscore.command.worldborder
 
 permissions:
   factionscore.command.f:
@@ -52,4 +57,13 @@ permissions:
     default: op
   factionscore.bypass.claims:
     description: Bypass faction land protection
+    default: op
+  factionscore.bypass.combatlog:
+    description: Exempt a player from the combat-log kill/teleport-block
+    default: op
+  factionscore.bypass.border:
+    description: Exempt a player from world border enforcement
+    default: op
+  factionscore.command.worldborder:
+    description: Inspect/administer the world border
     default: op

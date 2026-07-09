@@ -11,6 +11,7 @@ import org.powernukkitx.level.generator.stages.LightPopulationStage;
 import org.powernukkitx.level.generator.stages.BiomeMapStage;
 import org.powernukkitx.level.generator.stages.nether.NetherPopulatorStage;
 import org.powernukkitx.level.generator.stages.nether.NetherTerrainStage;
+import org.powernukkitx.level.generator.stages.normal.ClassicCaveCarvingStage;
 import org.powernukkitx.level.generator.stages.normal.NormalPopulatorStage;
 import org.powernukkitx.level.generator.stages.normal.NormalSurfaceDataStage;
 import org.powernukkitx.level.generator.stages.normal.NormalSurfaceOverwriteStage;
@@ -35,6 +36,7 @@ public class GenerateStageRegistry implements IRegistry<String, GenerateStage, C
             this.register(LightPopulationStage.NAME, LightPopulationStage.class);
             this.register(BiomeMapStage.NAME, BiomeMapStage.class);
             this.register(NormalTerrainStage.NAME, NormalTerrainStage.class);
+            this.register(ClassicCaveCarvingStage.NAME, ClassicCaveCarvingStage.class);
             this.register(NormalSurfaceDataStage.NAME, NormalSurfaceDataStage.class);
             this.register(NormalSurfaceOverwriteStage.NAME, NormalSurfaceOverwriteStage.class);
             this.register(NormalPopulatorStage.NAME, NormalPopulatorStage.class);

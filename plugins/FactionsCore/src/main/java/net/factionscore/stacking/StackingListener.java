@@ -1,5 +1,7 @@
 package net.factionscore.stacking;
 
+import net.factionscore.faction.FactionManager;
+import net.factionscore.faction.FactionValueManager;
 import org.powernukkitx.Player;
 import org.powernukkitx.blockentity.BlockEntity;
 import org.powernukkitx.blockentity.BlockEntityMobSpawner;
@@ -19,10 +21,14 @@ public final class StackingListener implements Listener {
 
     private final MobStackManager mobStacks;
     private final SpawnerStackManager spawnerStacks;
+    private final FactionManager factions;
+    private final FactionValueManager values;
 
-    public StackingListener(MobStackManager mobStacks, SpawnerStackManager spawnerStacks) {
+    public StackingListener(MobStackManager mobStacks, SpawnerStackManager spawnerStacks, FactionManager factions, FactionValueManager values) {
         this.mobStacks = mobStacks;
         this.spawnerStacks = spawnerStacks;
+        this.factions = factions;
+        this.values = values;
     }
 
     @EventHandler
@@ -83,6 +89,8 @@ public final class StackingListener implements Listener {
             player.sendMessage(TextFormat.RED + "This spawner is already at the maximum stack size.");
         } else {
             player.sendMessage(TextFormat.GREEN + "Spawner stacked to x" + newLevel + ".");
+            factions.getClaimOwner(event.getBlock().getLocation())
+                    .ifPresent(owner -> values.onSpawnerStackIncreased(player.getLevel(), event.getBlock(), newLevel));
         }
     }
 }

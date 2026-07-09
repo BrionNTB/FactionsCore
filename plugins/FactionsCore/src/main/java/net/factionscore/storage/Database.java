@@ -46,7 +46,8 @@ public final class Database {
                     home_level TEXT,
                     home_x REAL,
                     home_y REAL,
-                    home_z REAL
+                    home_z REAL,
+                    spawner_value REAL NOT NULL DEFAULT 0
                 )
                 """);
             statement.execute("""
@@ -74,6 +75,18 @@ public final class Database {
                     chunk_z INTEGER NOT NULL,
                     faction_id TEXT NOT NULL,
                     PRIMARY KEY (level_name, chunk_x, chunk_z),
+                    FOREIGN KEY (faction_id) REFERENCES factions(id) ON DELETE CASCADE
+                )
+                """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS faction_tracked_spawners (
+                    level_name TEXT NOT NULL,
+                    x INTEGER NOT NULL,
+                    y INTEGER NOT NULL,
+                    z INTEGER NOT NULL,
+                    faction_id TEXT NOT NULL,
+                    stack_level INTEGER NOT NULL DEFAULT 1,
+                    PRIMARY KEY (level_name, x, y, z),
                     FOREIGN KEY (faction_id) REFERENCES factions(id) ON DELETE CASCADE
                 )
                 """);

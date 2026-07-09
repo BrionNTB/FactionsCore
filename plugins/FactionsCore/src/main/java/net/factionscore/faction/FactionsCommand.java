@@ -7,15 +7,18 @@ import org.powernukkitx.command.CommandSender;
 import org.powernukkitx.level.Position;
 import org.powernukkitx.utils.TextFormat;
 
+import java.util.Comparator;
 import java.util.UUID;
 
 public final class FactionsCommand extends Command {
 
     private final FactionManager factions;
+    private final FactionValueManager values;
 
-    public FactionsCommand(FactionManager factions) {
+    public FactionsCommand(FactionManager factions, FactionValueManager values) {
         super("f", "Factions command", "/f help", new String[]{"factions", "faction"});
         this.factions = factions;
+        this.values = values;
     }
 
     @Override
@@ -40,6 +43,8 @@ public final class FactionsCommand extends Command {
             case "power" -> power(sender);
             case "info" -> info(sender, args);
             case "list" -> list(sender);
+            case "value" -> value(sender, args);
+            case "top" -> top(sender);
             default -> sendHelp(sender);
         }
         return true;
@@ -50,7 +55,8 @@ public final class FactionsCommand extends Command {
         for (String line : new String[]{
                 "/f create <name>", "/f disband", "/f invite <player>", "/f join <faction>",
                 "/f leave", "/f kick <player>", "/f claim", "/f unclaim", "/f sethome", "/f home",
-                "/f ally|enemy|truce|neutral <faction>", "/f power", "/f info [faction]", "/f list"
+                "/f ally|enemy|truce|neutral <faction>", "/f power", "/f info [faction]", "/f list",
+                "/f value [faction]", "/f top"
         }) {
             sender.sendMessage(TextFormat.YELLOW + line);
         }
@@ -274,6 +280,33 @@ public final class FactionsCommand extends Command {
         sender.sendMessage(TextFormat.GOLD + "=== " + faction.getName() + " ===");
         sender.sendMessage(TextFormat.YELLOW + "Power: " + faction.getPower());
         sender.sendMessage(TextFormat.YELLOW + "Members: " + faction.members().size());
+        sender.sendMessage(TextFormat.YELLOW + "Value: " + (long) values.totalValue(faction)
+                + TextFormat.GRAY + " (spawners: " + (long) faction.getSpawnerValue() + ")");
+    }
+
+    private void value(CommandSender sender, String[] args) {
+        Faction faction;
+        if (args.length >= 2) {
+            faction = factions.getByName(args[1]).orElse(null);
+        } else {
+            Player player = asPlayer(sender);
+            faction = player == null ? null : factions.getByMember(player.getUniqueId()).orElse(null);
+        }
+        if (faction == null) {
+            sender.sendMessage(TextFormat.RED + "No such faction.");
+            return;
+        }
+        sender.sendMessage(TextFormat.GOLD + faction.getName() + " value: " + (long) values.totalValue(faction)
+                + TextFormat.GRAY + " (spawners contribute: " + (long) faction.getSpawnerValue() + ")");
+    }
+
+    private void top(CommandSender sender) {
+        sender.sendMessage(TextFormat.GOLD + "--- Faction value leaderboard ---");
+        factions.all().stream()
+                .sorted(Comparator.comparingDouble(values::totalValue).reversed())
+                .limit(10)
+                .forEach(faction -> sender.sendMessage(TextFormat.YELLOW + faction.getName()
+                        + TextFormat.GRAY + " - " + (long) values.totalValue(faction)));
     }
 
     private void list(CommandSender sender) {

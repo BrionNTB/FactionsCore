@@ -265,12 +265,13 @@ public final class FactionManager {
         Connection connection = database.connection();
         Map<String, Faction> loaded = new ConcurrentHashMap<>();
         try (Statement dummy = connection.createStatement();
-             ResultSet rs = dummy.executeQuery("SELECT id, name, power, home_level, home_x, home_y, home_z FROM factions")) {
+             ResultSet rs = dummy.executeQuery("SELECT id, name, power, home_level, home_x, home_y, home_z, spawner_value FROM factions")) {
             while (rs.next()) {
                 String id = rs.getString("id");
                 String name = rs.getString("name");
                 Faction faction = new Faction(id, name, null);
                 faction.setPower(rs.getDouble("power"));
+                faction.setSpawnerValue(rs.getDouble("spawner_value"));
                 String homeLevel = rs.getString("home_level");
                 if (homeLevel != null) {
                     Level level = Server.getInstance().getLevelByName(homeLevel);

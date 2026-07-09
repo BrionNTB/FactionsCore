@@ -2,9 +2,11 @@ package net.factionscore.anticheat;
 
 import net.factionscore.anticheat.check.AimCheck;
 import net.factionscore.anticheat.check.AutoClickerCheck;
+import net.factionscore.anticheat.check.ReachCheck;
 import net.factionscore.anticheat.check.XrayCheck;
 import org.powernukkitx.Player;
 import org.powernukkitx.block.Block;
+import org.powernukkitx.entity.Entity;
 import org.powernukkitx.utils.Config;
 
 import java.util.Map;
@@ -17,12 +19,14 @@ public final class AntiCheatManager {
     private final AutoClickerCheck autoClickerCheck;
     private final XrayCheck xrayCheck;
     private final AimCheck aimCheck;
+    private final ReachCheck reachCheck;
     private final PunishmentManager punishmentManager;
 
     public AntiCheatManager(Config config, PunishmentManager punishmentManager) {
         this.autoClickerCheck = new AutoClickerCheck(config);
         this.xrayCheck = new XrayCheck(config);
         this.aimCheck = new AimCheck(config);
+        this.reachCheck = new ReachCheck(config);
         this.punishmentManager = punishmentManager;
     }
 
@@ -62,6 +66,14 @@ public final class AntiCheatManager {
         if (result.flagged()) {
             punishmentManager.recordFlag(player, "aim", result.detail());
             playerData.aimDeltas.clear();
+        }
+    }
+
+    public void onAttack(Player attacker, Entity victim) {
+        if (attacker.hasPermission("factionscore.bypass.anticheat")) return;
+        var result = reachCheck.evaluate(attacker, victim);
+        if (result.flagged()) {
+            punishmentManager.recordFlag(attacker, "reach", result.detail());
         }
     }
 
