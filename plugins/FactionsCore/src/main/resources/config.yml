@@ -1,0 +1,115 @@
+# FactionsCore configuration
+
+storage:
+  # sqlite (bundled, zero setup) is the only backend implemented right now.
+  type: sqlite
+  file: factionscore.db
+
+factions:
+  power:
+    starting: 10.0
+    max-per-member: 10.0
+    regen-per-hour: 1.0
+    loss-per-death: 4.0
+  claims:
+    chunk-cost: 1.0        # power cost per claimed chunk
+    min-distance-from-other-faction: 1  # chunks, buffer/DTR-less "border" gap
+    protect-build: true
+    protect-pvp-in-safezone: true
+  home:
+    teleport-delay-seconds: 3
+    cancel-on-move: true
+  raidable:
+    enabled: true
+    dtr-loss-opens-raid: false   # this engine doesn't track DTR, power<=0 is used instead
+
+combat:
+  # Bedrock never implemented the Java 1.9+ attack-cooldown/"sword sweep" system,
+  # so combat here is already closer to Java 1.8.8 by default. These let owners
+  # tune it further to match 1.8 PvP feel exactly.
+  legacy-knockback: true
+  base-horizontal-knockback: 0.4
+  base-vertical-knockback: 0.4
+  sprint-reset-on-hit: true
+  critical-hit:
+    enabled: true
+    multiplier: 1.5
+    requires-falling: true
+
+enchants:
+  # CosmicPvP-style custom enchants layered on top of vanilla enchanting.
+  max-custom-enchants-per-item: 3
+  allow-combining-in-anvil: true
+  enabled:
+    - stun
+    - tornado
+    - leech
+    - blaze
+    - spring
+    - haste
+    - escape
+    - lightning
+    - gravity
+    - webber
+
+anticheat:
+  enabled: true
+  autoclicker:
+    enabled: true
+    sample-size: 20          # clicks per rolling window
+    max-cps: 20
+    flag-cps: 14
+    max-variance-below: 4.5  # ms stddev between clicks; too-consistent => flag
+    ban-after-flags: 6
+  xray:
+    enabled: true
+    track-ores:
+      - diamond_ore
+      - deepslate_diamond_ore
+      - ancient_debris
+      - emerald_ore
+      - deepslate_emerald_ore
+    suspicion-window-minutes: 30
+    flag-threshold: 5         # "straight-lined to ore in the dark" events per window
+    notify-staff: true
+  aim:
+    enabled: true
+    max-snap-angle-degrees: 60     # single-tick yaw/pitch delta considered humanly implausible
+    min-humanlike-jitter: 0.02     # near-zero variance in aim deltas over a window => flag
+    sample-size: 40
+    flag-threshold: 8
+  punishment:
+    flags-to-warn: 3
+    flags-to-kick: 8
+    flags-to-ban: 15
+    ban-duration-hours: 72
+
+stacking:
+  mobs:
+    enabled: true
+    radius: 4.0
+    max-stack-size: 64
+    excluded:
+      - wither
+      - ender_dragon
+      - warden
+    scale-loot: true
+    scale-xp: true
+  spawners:
+    enabled: true
+    max-stack-size: 64
+    mobs-per-spawn-scaling: true
+
+updater:
+  enabled: true
+  check-interval-minutes: 60
+  channel: stable
+  auto-apply: false   # if true, downloads + swaps jar and requests a restart
+  repo: PowerNukkitX/PowerNukkitX
+  jar-name: server.jar   # filename of the running server jar, relative to the working directory
+
+buycraft:
+  enabled: false
+  # Tebex/Buycraft "Command Queue" API secret, from the store's Server settings.
+  secret-key: ""
+  poll-interval-seconds: 60

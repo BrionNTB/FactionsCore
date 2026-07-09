@@ -1,0 +1,55 @@
+name: FactionsCore
+main: net.factionscore.FactionsCorePlugin
+version: "0.1.0"
+api: ["3.0.0"]
+author: FactionsCore
+description: PvP-tuned factions gamemode for a Bedrock server engine forked and optimized for Java 1.8.8-style combat/cannoning.
+website: https://github.com/brionntb/factionscore
+load: POSTWORLD
+
+commands:
+  f:
+    aliases: [factions, faction]
+    description: Factions command
+    usage: "/f help"
+    permission: factionscore.command.f
+  fadmin:
+    description: Factions admin command
+    usage: "/fadmin help"
+    permission: factionscore.command.fadmin
+  enchant:
+    description: Apply/inspect custom enchants
+    usage: "/enchant help"
+    permission: factionscore.command.enchant
+  stack:
+    description: Mob/spawner stacking controls
+    usage: "/stack help"
+    permission: factionscore.command.stack
+  anticheat:
+    aliases: [ac]
+    description: Anti-cheat inspection and management
+    usage: "/anticheat help"
+    permission: factionscore.command.anticheat
+
+permissions:
+  factionscore.command.f:
+    description: Use faction commands
+    default: true
+  factionscore.command.fadmin:
+    description: Use faction admin commands
+    default: op
+  factionscore.command.enchant:
+    description: Use custom enchant commands
+    default: op
+  factionscore.command.stack:
+    description: Use mob/spawner stacking commands
+    default: op
+  factionscore.command.anticheat:
+    description: Use anti-cheat commands
+    default: op
+  factionscore.bypass.anticheat:
+    description: Exempt a player from anti-cheat flags
+    default: op
+  factionscore.bypass.claims:
+    description: Bypass faction land protection
+    default: op

@@ -1,0 +1,18 @@
+.gradle/
+build/
+out/
+*.class
+.idea/
+*.iml
+.vscode/
+
+# server runtime data, not source
+run/
+server.jar
+*.log
+worlds/
+players/
+plugins/*/data/
+*.db
+*.db-shm
+*.db-wal
