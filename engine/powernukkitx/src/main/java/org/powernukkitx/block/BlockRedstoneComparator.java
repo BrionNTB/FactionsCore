@@ -155,7 +155,8 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode impleme
     }
 
     private void onChange() {
-        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+        if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()
+                || !this.level.getServer().getSettings().gameplaySettings().tickRedstone()) {
             return;
         }
 

@@ -1,5 +1,6 @@
 package net.factionscore.enchant;
 
+import net.factionscore.enchant.book.BookItems;
 import org.powernukkitx.Player;
 import org.powernukkitx.Server;
 import org.powernukkitx.command.Command;
@@ -26,6 +27,7 @@ public final class EnchantCommand extends Command {
         switch (args[0].toLowerCase()) {
             case "list" -> list(sender);
             case "give" -> give(sender, args);
+            case "givebook" -> giveBook(sender, args);
             case "info" -> info(sender);
             default -> sendHelp(sender);
         }
@@ -34,8 +36,35 @@ public final class EnchantCommand extends Command {
 
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(TextFormat.YELLOW + "/enchant list");
-        sender.sendMessage(TextFormat.YELLOW + "/enchant give <player> <enchant> <level>");
+        sender.sendMessage(TextFormat.YELLOW + "/enchant give <player> <enchant> <level>" + TextFormat.GRAY + " (applies directly, admin shortcut)");
+        sender.sendMessage(TextFormat.YELLOW + "/enchant givebook <player> <enchant> <level>" + TextFormat.GRAY + " (spawns a book -- drag it onto an item in your inventory to apply, no anvil)");
         sender.sendMessage(TextFormat.YELLOW + "/enchant info");
+    }
+
+    private void giveBook(CommandSender sender, String[] args) {
+        if (args.length < 4) {
+            sender.sendMessage(TextFormat.RED + "Usage: /enchant givebook <player> <enchant> <level>");
+            return;
+        }
+        Player target = Server.getInstance().getPlayerExact(args[1]);
+        if (target == null) {
+            sender.sendMessage(TextFormat.RED + "Player not found.");
+            return;
+        }
+        int level;
+        try {
+            level = Integer.parseInt(args[3]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(TextFormat.RED + "Invalid level.");
+            return;
+        }
+        var book = BookItems.create(args[2], level);
+        if (book.isEmpty()) {
+            sender.sendMessage(TextFormat.RED + "Unknown enchant: " + args[2]);
+            return;
+        }
+        target.getInventory().addItem((Item) book.get());
+        sender.sendMessage(TextFormat.GREEN + "Gave " + target.getName() + " a " + args[2] + " " + level + " book.");
     }
 
     private void list(CommandSender sender) {

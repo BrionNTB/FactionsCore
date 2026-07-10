@@ -6,6 +6,8 @@ import net.factionscore.enchant.impl.GravityEnchant;
 import net.factionscore.enchant.impl.HasteEnchant;
 import net.factionscore.enchant.impl.LeechEnchant;
 import net.factionscore.enchant.impl.LightningEnchant;
+import net.factionscore.enchant.impl.ProtectionEnchant;
+import net.factionscore.enchant.impl.SharpnessEnchant;
 import net.factionscore.enchant.impl.SpringEnchant;
 import net.factionscore.enchant.impl.StunEnchant;
 import net.factionscore.enchant.impl.TornadoEnchant;
@@ -33,12 +35,18 @@ public final class CustomEnchantRegistry {
         all.put("lightning", new LightningEnchant());
         all.put("gravity", new GravityEnchant());
         all.put("webber", new WebberEnchant());
+        all.put("protection", new ProtectionEnchant());
+        all.put("sharpness", new SharpnessEnchant());
 
         for (var entry : all.entrySet()) {
             if (!enabled.isEmpty() && !enabled.contains(entry.getKey())) {
                 continue;
             }
-            var result = Enchantment.register(entry.getValue(), true);
+            // registerItem=false: FactionsCore ships its own book items (enchant/book/) with a
+            // reliable level stored in NBT instead of the engine's auto-generated per-level books,
+            // whose id-encodes-level scheme (e.g. "factionscore:stun3") doesn't round-trip back
+            // through Enchantment.getEnchantment(String) since that looks up the bare identifier.
+            var result = Enchantment.register(entry.getValue(), false);
             if (result.ok()) {
                 byShortName.put(entry.getKey(), entry.getValue());
             }

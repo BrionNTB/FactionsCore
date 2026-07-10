@@ -71,7 +71,8 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Redsto
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
+            if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()
+                    || !this.level.getServer().getSettings().gameplaySettings().tickRedstone()) {
                 return 0;
             }
 

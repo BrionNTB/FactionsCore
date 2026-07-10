@@ -105,6 +105,30 @@ public final class Database {
                     level INTEGER NOT NULL
                 )
                 """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS shop_location (
+                    id INTEGER PRIMARY KEY CHECK (id = 1),
+                    level_name TEXT NOT NULL,
+                    x REAL NOT NULL,
+                    y REAL NOT NULL,
+                    z REAL NOT NULL,
+                    yaw REAL NOT NULL DEFAULT 0,
+                    pitch REAL NOT NULL DEFAULT 0
+                )
+                """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS player_balance (
+                    player_uuid TEXT PRIMARY KEY,
+                    balance REAL NOT NULL DEFAULT 0
+                )
+                """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS sell_demand (
+                    item_id TEXT PRIMARY KEY,
+                    multiplier REAL NOT NULL DEFAULT 1.0,
+                    updated_at INTEGER NOT NULL DEFAULT 0
+                )
+                """);
         }
     }
 

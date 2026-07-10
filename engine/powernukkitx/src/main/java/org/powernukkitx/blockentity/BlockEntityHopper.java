@@ -7,6 +7,8 @@ import org.powernukkitx.block.BlockHopper;
 import org.powernukkitx.block.BlockID;
 import org.powernukkitx.block.BlockState;
 import org.powernukkitx.block.property.CommonBlockProperties;
+import org.powernukkitx.entity.Entity;
+import org.powernukkitx.entity.item.EntityItem;
 import org.powernukkitx.event.block.HopperSearchItemEvent;
 import org.powernukkitx.event.inventory.InventoryMoveItemEvent;
 import org.powernukkitx.inventory.BrewingInventory;
@@ -49,6 +51,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
 
     private boolean disabled;
 
+    /**
+     * FactionsCore hopper tier (1 = vanilla, 2/3 = the custom loot-multiplier tiers). Persisted so
+     * it survives chunk unload/reload; see {@link #pickupItems}.
+     */
+    private int tier = 1;
+
     private final BlockVector3 temporalVector = new BlockVector3();
 
     //由容器矿车检测漏斗并通知更新，这样子能大幅优化性能
@@ -77,6 +85,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         } else {
             this.transferCooldown = 8;
         }
+
+        this.tier = this.nbt.contains("FCTier") ? this.nbt.getInt("FCTier") : 1;
 
         this.inventory = new HopperInventory(this);
 
@@ -200,6 +210,76 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements BlockEnti
         }
 
         this.nbt.putInt("TransferCooldown", this.transferCooldown);
+        this.nbt.putInt("FCTier", this.tier);
+    }
+
+    public int getTier() {
+        return tier;
+    }
+
+    public void setTier(int tier) {
+        this.tier = tier;
+        this.nbt.putInt("FCTier", tier);
+    }
+
+    /**
+     * Loot multiplier for items this hopper vacuums up off the ground. Applied at pickup (rather
+     * than every subsequent push down the pipe) so it cleanly composes with however the item is
+     * later moved along; see plugins/FactionsCore's hopper documentation for the reasoning and its
+     * scope (it multiplies whatever the hopper picks up, not specifically mob-kill-tagged drops --
+     * distinguishing drop provenance would need tagging every dropped item at the source).
+     */
+    protected double lootMultiplier() {
+        return switch (tier) {
+            case 3 -> 3.0;
+            case 2 -> 1.5;
+            default -> 1.0;
+        };
+    }
+
+    @Override
+    public boolean pickupItems(InventoryHolder hopperHolder, Position hopperPos, AxisAlignedBB pickupArea) {
+        double multiplier = lootMultiplier();
+        if (multiplier <= 1.0) {
+            return BlockHopper.IHopper.super.pickupItems(hopperHolder, hopperPos, pickupArea);
+        }
+
+        var hopperInv = hopperHolder.getInventory();
+        if (hopperInv.isFull()) {
+            return false;
+        }
+
+        boolean pickedUpItem = false;
+        for (Entity entity : hopperPos.level.getCollidingEntities(pickupArea)) {
+            if (entity == null || entity.isClosed() || !(entity instanceof EntityItem itemEntity)) {
+                continue;
+            }
+            if (itemEntity.isDisplayOnly()) {
+                continue;
+            }
+
+            Item item = itemEntity.getItem();
+            if (item.isNull()) {
+                continue;
+            }
+
+            Item itemToAdd = item.clone();
+            itemToAdd.setCount(Math.max(1, (int) Math.round(item.getCount() * multiplier)));
+
+            // All-or-nothing: partially fitting a multiplied stack would need to reconcile a
+            // fractional amount back onto the ground item, which risks a duplication/loss bug for
+            // little practical benefit (hoppers have 5 stacks of room; "almost full" is rare).
+            if (!hopperInv.canAddItem(itemToAdd) || !hopperInv.callPickupItemEvent(itemEntity)) {
+                continue;
+            }
+
+            Item[] leftover = hopperInv.addItem(itemToAdd);
+            if (leftover.length == 0) {
+                entity.close();
+                pickedUpItem = true;
+            }
+        }
+        return pickedUpItem;
     }
 
     @Override

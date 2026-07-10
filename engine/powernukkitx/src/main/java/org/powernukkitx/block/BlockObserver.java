@@ -82,6 +82,9 @@ public class BlockObserver extends BlockSolid implements RedstoneComponent, Face
 
     @Override
     public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED && !this.level.getServer().getSettings().gameplaySettings().tickRedstone()) {
+            return 0;
+        }
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_MOVED) {
             RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
             PluginManager pluginManager = level.getServer().getPluginManager();

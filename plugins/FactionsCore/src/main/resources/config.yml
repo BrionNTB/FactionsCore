@@ -45,7 +45,6 @@ combat:
 enchants:
   # CosmicPvP-style custom enchants layered on top of vanilla enchanting.
   max-custom-enchants-per-item: 3
-  allow-combining-in-anvil: true
   enabled:
     - stun
     - tornado
@@ -57,6 +56,18 @@ enchants:
     - lightning
     - gravity
     - webber
+    - protection
+    - sharpness
+  apply:
+    # Drag the enchant book directly onto the target item in your own inventory -- no anvil.
+    # Base success chance per book level (index 0 = level 1); levels beyond the list reuse the
+    # last entry. Dragging a stack of 2+ of the same book consumes 2 and applies the "combined"
+    # chance instead of the base one for that level.
+    base-success-chance: [0.90, 0.80, 0.70, 0.55, 0.40, 0.25]
+    combined-success-chance: [0.98, 0.92, 0.85, 0.75, 0.60, 0.45]
+    # Player (XP) level required to even attempt a book of this enchant level; index 0 = level 1.
+    required-player-level: [0, 0, 5, 10, 20, 30]
+    fail-damage: 4.0
 
 anticheat:
   enabled: true
@@ -140,3 +151,33 @@ buycraft:
   # Tebex/Buycraft "Command Queue" API secret, from the store's Server settings.
   secret-key: ""
   poll-interval-seconds: 60
+
+sell:
+  demand:
+    fluctuate-hours: 4
+    max-swing-per-tick: 0.20   # max +/- 20% drift per fluctuation
+    min-multiplier: 0.4
+    max-multiplier: 1.8
+  # Base $ per item before the demand multiplier. Add/remove lines freely -- /sell reads whatever
+  # is here, it isn't hardcoded to this list.
+  prices:
+    minecraft:rotten_flesh: 0.5
+    minecraft:bone: 1.0
+    minecraft:string: 1.0
+    minecraft:spider_eye: 1.5
+    minecraft:gunpowder: 2.0
+    minecraft:ender_pearl: 15.0
+    minecraft:blaze_rod: 8.0
+    minecraft:slime_ball: 3.0
+    minecraft:leather: 2.0
+    minecraft:feather: 0.5
+    minecraft:egg: 0.5
+    minecraft:wheat: 1.0
+    minecraft:carrot: 1.0
+    minecraft:potato: 1.0
+    minecraft:beetroot: 1.0
+    minecraft:melon_slice: 0.75
+    minecraft:pumpkin: 3.0
+    minecraft:sugar_cane: 1.0
+    minecraft:nether_wart: 2.5
+    minecraft:cocoa_beans: 1.5

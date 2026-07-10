@@ -15,6 +15,9 @@ dependencies {
     // engine event getters; the engine itself only depends on this as `implementation`, so it
     // isn't exposed transitively to plugin modules.
     compileOnly("org.powernukkitx.protocol:bedrock-connection:3.0.0.Beta7-Debug-SNAPSHOT")
+    // GameplaySettings (OkaeriConfig) is only an `implementation` dep of the engine, so its class
+    // needs to be on our compile classpath too to reference gameplaySettings() return type.
+    compileOnly("eu.okaeri:okaeri-configs-core:5.0.1")
 
     // Buycraft/Tebex command-queue polling uses a small HTTP client + JSON parsing.
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

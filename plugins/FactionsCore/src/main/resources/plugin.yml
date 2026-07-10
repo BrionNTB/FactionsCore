@@ -35,6 +35,18 @@ commands:
     description: World border inspection/administration
     usage: "/worldborder help"
     permission: factionscore.command.worldborder
+  shop:
+    description: Teleport to the shop
+    usage: "/shop"
+    permission: factionscore.command.shop
+  setshop:
+    description: Set the shop location
+    usage: "/setshop"
+    permission: factionscore.command.setshop
+  sell:
+    description: Sell mob/crop loot
+    usage: "/sell"
+    permission: factionscore.command.sell
 
 permissions:
   factionscore.command.f:
@@ -67,3 +79,12 @@ permissions:
   factionscore.command.worldborder:
     description: Inspect/administer the world border
     default: op
+  factionscore.command.shop:
+    description: Teleport to the shop
+    default: true
+  factionscore.command.setshop:
+    description: Set the shop location
+    default: op
+  factionscore.command.sell:
+    description: Open the sell shop
+    default: true
