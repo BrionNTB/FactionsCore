@@ -14,11 +14,14 @@ public final class FactionsCommand extends Command {
 
     private final FactionManager factions;
     private final FactionValueManager values;
+    private final net.factionscore.faction.listener.FactionChatListener chat;
 
-    public FactionsCommand(FactionManager factions, FactionValueManager values) {
+    public FactionsCommand(FactionManager factions, FactionValueManager values, net.factionscore.faction.listener.FactionChatListener chat) {
         super("f", "Factions command", "/f help", new String[]{"factions", "faction"});
+        this.setPermission("factionscore.command.f");
         this.factions = factions;
         this.values = values;
+        this.chat = chat;
     }
 
     @Override
@@ -45,6 +48,7 @@ public final class FactionsCommand extends Command {
             case "list" -> list(sender);
             case "value" -> value(sender, args);
             case "top" -> top(sender);
+            case "chat", "c" -> toggleChat(sender);
             default -> sendHelp(sender);
         }
         return true;
@@ -56,7 +60,7 @@ public final class FactionsCommand extends Command {
                 "/f create <name>", "/f disband", "/f invite <player>", "/f join <faction>",
                 "/f leave", "/f kick <player>", "/f claim", "/f unclaim", "/f sethome", "/f home",
                 "/f ally|enemy|truce|neutral <faction>", "/f power", "/f info [faction]", "/f list",
-                "/f value [faction]", "/f top"
+                "/f value [faction]", "/f top", "/f chat"
         }) {
             sender.sendMessage(TextFormat.YELLOW + line);
         }
@@ -314,6 +318,16 @@ public final class FactionsCommand extends Command {
         for (Faction faction : factions.all()) {
             sender.sendMessage(TextFormat.YELLOW + faction.getName() + TextFormat.GRAY + " (" + faction.members().size() + " members, " + faction.getPower() + " power)");
         }
+    }
+
+    private void toggleChat(CommandSender sender) {
+        Player player = asPlayer(sender);
+        if (player == null) return;
+        if (requireFaction(sender, player) == null) return;
+        boolean enabled = chat.toggle(player.getUniqueId());
+        sender.sendMessage(enabled
+                ? TextFormat.GREEN + "Faction chat ON -- only your faction sees your messages. /f chat to switch back."
+                : TextFormat.YELLOW + "Faction chat OFF -- back to public chat.");
     }
 
     private Faction requireFaction(CommandSender sender, Player player) {

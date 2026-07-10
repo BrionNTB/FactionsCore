@@ -47,6 +47,49 @@ commands:
     description: Sell mob/crop loot
     usage: "/sell"
     permission: factionscore.command.sell
+  balance:
+    aliases: [bal, money]
+    description: Check a balance
+    usage: "/balance [player]"
+    permission: factionscore.command.balance
+  pay:
+    description: Send money to another player
+    usage: "/pay <player> <amount>"
+    permission: factionscore.command.balance
+  baltop:
+    description: Richest players leaderboard
+    usage: "/baltop"
+    permission: factionscore.command.balance
+  wild:
+    aliases: [rtp]
+    description: Random wilderness teleport
+    usage: "/wild"
+    permission: factionscore.command.wild
+  kit:
+    aliases: [kits]
+    description: Claim a kit
+    usage: "/kit [name]"
+    permission: factionscore.command.kit
+  bounty:
+    description: Place or view kill bounties
+    usage: "/bounty <set|list>"
+    permission: factionscore.command.bounty
+  koth:
+    description: King of the Hill event
+    usage: "/koth status"
+    permission: factionscore.command.koth
+  envoy:
+    description: Supply-drop event administration
+    usage: "/envoy <start|setcenter|clear>"
+    permission: factionscore.command.envoy
+  crate:
+    description: Crate administration
+    usage: "/crate <set|remove|give>"
+    permission: factionscore.command.crate
+  sellwand:
+    description: Give a sell wand
+    usage: "/sellwand <player> [uses]"
+    permission: factionscore.command.sellwand
 
 permissions:
   factionscore.command.f:
@@ -88,3 +131,33 @@ permissions:
   factionscore.command.sell:
     description: Open the sell shop
     default: true
+  factionscore.command.balance:
+    description: Use /balance, /pay and /baltop
+    default: true
+  factionscore.command.wild:
+    description: Use /wild
+    default: true
+  factionscore.command.kit:
+    description: Use /kit
+    default: true
+  factionscore.command.bounty:
+    description: Use /bounty
+    default: true
+  factionscore.command.koth:
+    description: View KOTH status
+    default: true
+  factionscore.command.kothadmin:
+    description: Start/stop/configure KOTH events
+    default: op
+  factionscore.command.envoy:
+    description: Administer envoy events
+    default: op
+  factionscore.command.crate:
+    description: Administer crates (bind chests, give keys, break crate chests)
+    default: op
+  factionscore.command.sellwand:
+    description: Give sell wands
+    default: op
+  factionscore.kit.pvp:
+    description: Access to the pvp kit
+    default: op

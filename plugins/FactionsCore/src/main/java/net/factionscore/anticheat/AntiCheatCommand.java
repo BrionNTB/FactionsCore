@@ -18,6 +18,7 @@ public final class AntiCheatCommand extends Command {
 
     public AntiCheatCommand(Database database) {
         super("anticheat", "Anti-cheat inspection and management", "/anticheat help", new String[]{"ac"});
+        this.setPermission("factionscore.command.anticheat");
         this.database = database;
     }
 

@@ -12,6 +12,7 @@ public final class SetShopCommand extends Command {
 
     public SetShopCommand(ShopManager shopManager) {
         super("setshop", "Set the shop location to your current position", "/setshop");
+        this.setPermission("factionscore.command.setshop");
         this.shopManager = shopManager;
     }
 

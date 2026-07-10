@@ -152,6 +152,84 @@ buycraft:
   secret-key: ""
   poll-interval-seconds: 60
 
+wild:
+  cooldown-seconds: 60
+  min-radius: 500
+  max-radius: 10000
+
+kits:
+  starter:
+    cooldown-hours: 24
+    permission: ""     # empty = everyone can claim
+    items:
+      - {id: minecraft:stone_sword, count: 1}
+      - {id: minecraft:stone_pickaxe, count: 1}
+      - {id: minecraft:bread, count: 16}
+      - {id: minecraft:leather_chestplate, count: 1}
+  pvp:
+    cooldown-hours: 48
+    permission: factionscore.kit.pvp
+    items:
+      - {id: minecraft:iron_sword, count: 1}
+      - {id: minecraft:iron_chestplate, count: 1}
+      - {id: minecraft:iron_leggings, count: 1}
+      - {id: minecraft:golden_apple, count: 4}
+
+koth:
+  capture-seconds: 300      # uncontested hold time to win
+  reward-money: 10000
+  # Extra console commands run on win; {player} is replaced with the winner's name.
+  reward-commands:
+    - "crate give {player} rare 1"
+
+envoy:
+  count: 6
+  despawn-minutes: 10
+  auto-interval-hours: 0    # 0 = manual only (/envoy start)
+  # Each chest independently rolls every entry; chance is 0..1.
+  loot:
+    - {id: minecraft:diamond, count: 4, chance: 0.5}
+    - {id: minecraft:golden_apple, count: 3, chance: 0.6}
+    - {id: minecraft:iron_ingot, count: 16, chance: 0.8}
+    - {id: minecraft:tnt, count: 8, chance: 0.5}
+    - {id: minecraft:ender_pearl, count: 4, chance: 0.4}
+    - {id: minecraft:obsidian, count: 8, chance: 0.4}
+
+crates:
+  # One weighted reward per key. Entries are either an item (id/count) or a console command
+  # with {player}; chance values are relative weights, not probabilities.
+  common:
+    loot:
+      - {id: minecraft:iron_ingot, count: 16, chance: 30}
+      - {id: minecraft:golden_apple, count: 2, chance: 20}
+      - {id: minecraft:tnt, count: 16, chance: 20}
+      - {id: minecraft:diamond, count: 2, chance: 10}
+      - {command: "enchant givebook {player} blaze 1", chance: 10}
+  rare:
+    loot:
+      - {id: minecraft:diamond, count: 8, chance: 30}
+      - {id: minecraft:tnt, count: 64, chance: 20}
+      - {command: "enchant givebook {player} lightning 1", chance: 15}
+      - {command: "enchant givebook {player} sharpness 5", chance: 10}
+      - {command: "sellwand {player} 25", chance: 5}
+  legendary:
+    loot:
+      - {command: "enchant givebook {player} sharpness 6", chance: 20}
+      - {command: "enchant givebook {player} protection 6", chance: 20}
+      - {command: "sellwand {player} 100", chance: 15}
+      - {id: minecraft:netherite_ingot, count: 2, chance: 15}
+      - {id: minecraft:mob_spawner, count: 1, chance: 5}
+
+genbuckets:
+  max-length: 40        # blocks per gen
+  ticks-per-block: 4    # placement speed
+
+raid:
+  obsidian-breaker:
+    enabled: true
+    tnt-hits: 5         # explosions near an obsidian block before it breaks
+    blast-radius: 4     # how close an explosion must be to count as a hit
+
 sell:
   demand:
     fluctuate-hours: 4

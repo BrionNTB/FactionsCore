@@ -72,13 +72,17 @@ public final class FactionsCorePlugin extends PluginBase {
 
         factionManager = new FactionManager(database, getConfig());
         FactionValueManager factionValueManager = new FactionValueManager(database, factionManager, getConfig());
+        net.factionscore.economy.EconomyManager economyManager = new net.factionscore.economy.EconomyManager(database);
 
-        getServer().getCommandMap().register("factionscore", new FactionsCommand(factionManager, factionValueManager));
+        net.factionscore.faction.listener.FactionChatListener factionChatListener =
+                new net.factionscore.faction.listener.FactionChatListener(factionManager);
+        getServer().getCommandMap().register("factionscore", new FactionsCommand(factionManager, factionValueManager, factionChatListener));
         getServer().getCommandMap().register("factionscore", new FactionsAdminCommand(factionManager));
 
         getServer().getPluginManager().registerEvents(new ClaimProtectionListener(factionManager, getConfig()), this);
         getServer().getPluginManager().registerEvents(new CombatTuningListener(getConfig()), this);
         getServer().getPluginManager().registerEvents(new SpawnerValueListener(factionManager, factionValueManager), this);
+        getServer().getPluginManager().registerEvents(factionChatListener, this);
 
         int regenIntervalTicks = 20 * 60 * 60; // once per in-game hour, matches power.regen-per-hour semantics
         getServer().getScheduler().scheduleRepeatingTask(this, () -> factionManager.applyPowerRegenTick(), regenIntervalTicks, true);
@@ -137,10 +141,55 @@ public final class FactionsCorePlugin extends PluginBase {
         getServer().getCommandMap().register("factionscore", new ShopCommand(shopManager));
         getServer().getCommandMap().register("factionscore", new SetShopCommand(shopManager));
 
-        SellManager sellManager = new SellManager(database, getConfig());
+        SellManager sellManager = new SellManager(database, getConfig(), economyManager);
         getServer().getCommandMap().register("factionscore", new SellCommand(sellManager));
         int fluctuateTicks = getConfig().getInt("sell.demand.fluctuate-hours", 4) * 60 * 60 * 20;
         getServer().getScheduler().scheduleRepeatingTask(this, sellManager::fluctuateDemand, fluctuateTicks, true);
+
+        getServer().getCommandMap().register("factionscore", new net.factionscore.economy.BalanceCommand(economyManager));
+        getServer().getCommandMap().register("factionscore", new net.factionscore.economy.PayCommand(economyManager));
+        getServer().getCommandMap().register("factionscore", new net.factionscore.economy.BalTopCommand(economyManager));
+        getServer().getCommandMap().register("factionscore", new net.factionscore.misc.WildCommand(factionManager, worldBorderManager, getConfig()));
+
+        net.factionscore.kit.KitManager kitManager = new net.factionscore.kit.KitManager(database, getConfig());
+        getServer().getCommandMap().register("factionscore", new net.factionscore.kit.KitCommand(kitManager));
+
+        net.factionscore.bounty.BountyManager bountyManager = new net.factionscore.bounty.BountyManager(database, economyManager);
+        getServer().getCommandMap().register("factionscore", new net.factionscore.bounty.BountyCommand(bountyManager));
+        getServer().getPluginManager().registerEvents(new net.factionscore.bounty.BountyListener(bountyManager), this);
+
+        net.factionscore.koth.KothManager kothManager = new net.factionscore.koth.KothManager(database, factionManager, economyManager, getConfig());
+        getServer().getCommandMap().register("factionscore", new net.factionscore.koth.KothCommand(kothManager));
+        getServer().getScheduler().scheduleRepeatingTask(this, kothManager::tick, 20, false);
+
+        net.factionscore.envoy.EnvoyManager envoyManager = new net.factionscore.envoy.EnvoyManager(database, getConfig(), this);
+        getServer().getCommandMap().register("factionscore", new net.factionscore.envoy.EnvoyCommand(envoyManager));
+        int envoyIntervalHours = getConfig().getInt("envoy.auto-interval-hours", 0);
+        if (envoyIntervalHours > 0) {
+            getServer().getScheduler().scheduleRepeatingTask(this, envoyManager::start, envoyIntervalHours * 60 * 60 * 20, false);
+        }
+
+        net.factionscore.crate.CrateManager crateManager = new net.factionscore.crate.CrateManager(database, getConfig());
+        getServer().getCommandMap().register("factionscore", new net.factionscore.crate.CrateCommand(crateManager));
+        getServer().getPluginManager().registerEvents(new net.factionscore.crate.CrateListener(crateManager), this);
+
+        getServer().getPluginManager().registerEvents(new net.factionscore.genbucket.GenBucketListener(factionManager, getConfig(), this), this);
+        getServer().getPluginManager().registerEvents(new net.factionscore.shop.SellWandListener(sellManager), this);
+        getServer().getCommandMap().register("factionscore", new net.factionscore.shop.SellWandCommand());
+        getServer().getPluginManager().registerEvents(new net.factionscore.raid.ObsidianBreakListener(getConfig()), this);
+
+        try {
+            org.powernukkitx.registry.Registries.ITEM.registerCustomItem(this,
+                    net.factionscore.crate.CommonKeyItem.class,
+                    net.factionscore.crate.RareKeyItem.class,
+                    net.factionscore.crate.LegendaryKeyItem.class,
+                    net.factionscore.genbucket.CobbleGenBucketItem.class,
+                    net.factionscore.genbucket.ObsidianGenBucketItem.class,
+                    net.factionscore.genbucket.SandGenBucketItem.class,
+                    net.factionscore.shop.SellWandItem.class);
+        } catch (org.powernukkitx.registry.RegisterException e) {
+            getLogger().warning("Failed to register crate/genbucket/sellwand items: " + e.getMessage());
+        }
 
         if (getConfig().getBoolean("buycraft.enabled", false)) {
             BuycraftIntegration buycraft = new BuycraftIntegration(getConfig(), getLogger());

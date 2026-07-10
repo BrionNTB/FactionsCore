@@ -8,6 +8,7 @@ public final class StackCommand extends Command {
 
     public StackCommand() {
         super("stack", "Mob/spawner stacking controls", "/stack help");
+        this.setPermission("factionscore.command.stack");
     }
 
     @Override

@@ -18,6 +18,7 @@ public final class SellCommand extends Command {
 
     public SellCommand(SellManager sellManager) {
         super("sell", "Sell mob/crop loot from your inventory", "/sell");
+        this.setPermission("factionscore.command.sell");
         this.sellManager = sellManager;
     }
 

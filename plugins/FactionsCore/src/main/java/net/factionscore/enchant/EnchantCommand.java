@@ -15,6 +15,7 @@ public final class EnchantCommand extends Command {
 
     public EnchantCommand(CustomEnchantRegistry registry) {
         super("enchant", "Apply/inspect custom enchants", "/enchant help");
+        this.setPermission("factionscore.command.enchant");
         this.registry = registry;
     }
 

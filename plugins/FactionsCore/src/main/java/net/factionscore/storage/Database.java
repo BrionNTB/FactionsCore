@@ -129,6 +129,42 @@ public final class Database {
                     updated_at INTEGER NOT NULL DEFAULT 0
                 )
                 """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS kit_claims (
+                    player_uuid TEXT NOT NULL,
+                    kit_name TEXT NOT NULL,
+                    claimed_at INTEGER NOT NULL,
+                    PRIMARY KEY (player_uuid, kit_name)
+                )
+                """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS bounties (
+                    target_uuid TEXT PRIMARY KEY,
+                    target_name TEXT NOT NULL,
+                    amount REAL NOT NULL,
+                    placed_by TEXT NOT NULL
+                )
+                """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS named_locations (
+                    name TEXT PRIMARY KEY,
+                    level_name TEXT NOT NULL,
+                    x REAL NOT NULL,
+                    y REAL NOT NULL,
+                    z REAL NOT NULL,
+                    radius REAL NOT NULL DEFAULT 0
+                )
+                """);
+            statement.execute("""
+                CREATE TABLE IF NOT EXISTS crate_locations (
+                    level_name TEXT NOT NULL,
+                    x INTEGER NOT NULL,
+                    y INTEGER NOT NULL,
+                    z INTEGER NOT NULL,
+                    crate_type TEXT NOT NULL,
+                    PRIMARY KEY (level_name, x, y, z)
+                )
+                """);
         }
     }
 

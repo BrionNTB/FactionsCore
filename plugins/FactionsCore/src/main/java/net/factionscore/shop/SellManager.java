@@ -22,12 +22,14 @@ public final class SellManager {
 
     private final Database database;
     private final Config config;
+    private final net.factionscore.economy.EconomyManager economy;
     private final Map<String, Double> basePrices = new LinkedHashMap<>();
     private final Map<String, Double> demandMultiplier = new ConcurrentHashMap<>();
 
-    public SellManager(Database database, Config config) {
+    public SellManager(Database database, Config config, net.factionscore.economy.EconomyManager economy) {
         this.database = database;
         this.config = config;
+        this.economy = economy;
         loadBasePrices();
         loadDemand();
     }
@@ -97,27 +99,10 @@ public final class SellManager {
     }
 
     public double getBalance(UUID player) {
-        try (PreparedStatement statement = database.connection().prepareStatement(
-                "SELECT balance FROM player_balance WHERE player_uuid = ?")) {
-            statement.setString(1, player.toString());
-            ResultSet rs = statement.executeQuery();
-            return rs.next() ? rs.getDouble("balance") : 0.0;
-        } catch (SQLException e) {
-            return 0.0;
-        }
+        return economy.getBalance(player);
     }
 
     public double addBalance(UUID player, double amount) {
-        double newBalance = getBalance(player) + amount;
-        try (PreparedStatement statement = database.connection().prepareStatement("""
-                INSERT INTO player_balance (player_uuid, balance) VALUES (?, ?)
-                ON CONFLICT(player_uuid) DO UPDATE SET balance = excluded.balance
-                """)) {
-            statement.setString(1, player.toString());
-            statement.setDouble(2, newBalance);
-            statement.executeUpdate();
-        } catch (SQLException ignored) {
-        }
-        return newBalance;
+        return economy.deposit(player, amount);
     }
 }

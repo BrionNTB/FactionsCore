@@ -11,6 +11,7 @@ public final class BorderCommand extends Command {
 
     public BorderCommand(WorldBorderManager border) {
         super("worldborder", "World border inspection/administration", "/worldborder help", new String[]{"wb", "border"});
+        this.setPermission("factionscore.command.worldborder");
         this.border = border;
     }
 

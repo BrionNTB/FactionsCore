@@ -10,6 +10,7 @@ public final class FactionsAdminCommand extends Command {
 
     public FactionsAdminCommand(FactionManager factions) {
         super("fadmin", "Factions admin command", "/fadmin help");
+        this.setPermission("factionscore.command.fadmin");
         this.factions = factions;
     }
 

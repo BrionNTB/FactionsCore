@@ -11,6 +11,7 @@ public final class ShopCommand extends Command {
 
     public ShopCommand(ShopManager shopManager) {
         super("shop", "Teleport to the shop", "/shop");
+        this.setPermission("factionscore.command.shop");
         this.shopManager = shopManager;
     }
 
