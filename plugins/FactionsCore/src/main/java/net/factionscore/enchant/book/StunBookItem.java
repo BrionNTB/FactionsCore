@@ -4,6 +4,6 @@ public final class StunBookItem extends CustomEnchantBookItem {
     public static final String ID = "factionscore:book_stun";
 
     public StunBookItem() {
-        super(ID, "stun", "Stun");
+        super(ID, "stun", "Stun", "Chance to slow and fatigue your victim mid-fight.");
     }
 }

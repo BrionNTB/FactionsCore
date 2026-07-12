@@ -7,6 +7,6 @@ public final class ObsidianGenBucketItem extends GenBucketItem {
     public static final String ID = "factionscore:genbucket_obsidian";
 
     public ObsidianGenBucketItem() {
-        super(ID, BlockID.OBSIDIAN, TextFormat.DARK_PURPLE + "Obsidian Gen Bucket");
+        super(ID, BlockID.OBSIDIAN, TextFormat.DARK_PURPLE + "" + TextFormat.BOLD + "Obsidian Gen Bucket");
     }
 }

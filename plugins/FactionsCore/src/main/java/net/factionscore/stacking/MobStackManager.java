@@ -39,6 +39,11 @@ public final class MobStackManager {
         return config.getBoolean("stacking.mobs.enabled", true);
     }
 
+    /** When true (default), only mobs produced by spawners stack; naturally spawned mobs stay vanilla. */
+    public boolean isSpawnerOnly() {
+        return config.getBoolean("stacking.mobs.spawner-only", true);
+    }
+
     public boolean isExcluded(String identifier) {
         String shortId = identifier.contains(":") ? identifier.substring(identifier.indexOf(':') + 1) : identifier;
         return config.getStringList("stacking.mobs.excluded").contains(shortId);
@@ -59,6 +64,8 @@ public final class MobStackManager {
         for (Entity candidate : level.getNearbyEntitiesSafe(box, spawned)) {
             if (candidate == spawned || candidate.closed) continue;
             if (!candidate.getIdentifier().equals(spawned.getIdentifier())) continue;
+            // In spawner-only mode, never absorb into (and thus rename) a naturally spawned mob.
+            if (isSpawnerOnly() && !candidate.getNbt().getBoolean("spawner")) continue;
             int current = stackCounts.getOrDefault(candidate.getUniqueId(), 1);
             int max = config.getInt("stacking.mobs.max-stack-size", 64);
             if (current < max) {

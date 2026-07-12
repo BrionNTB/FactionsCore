@@ -105,6 +105,15 @@ public final class FactionsCorePlugin extends PluginBase {
         SpawnerStackManager spawnerStackManager = new SpawnerStackManager(getConfig());
         getServer().getPluginManager().registerEvents(new StackingListener(mobStackManager, spawnerStackManager, factionManager, factionValueManager), this);
         getServer().getCommandMap().register("factionscore", new StackCommand());
+        getServer().getCommandMap().register("factionscore", new net.factionscore.stacking.SpawnerCommand());
+        getServer().getPluginManager().registerEvents(new net.factionscore.stacking.SpawnerItemListener(this), this);
+
+        net.factionscore.sidebar.SidebarManager sidebarManager =
+                new net.factionscore.sidebar.SidebarManager(factionManager, economyManager, getConfig());
+        if (sidebarManager.isEnabled()) {
+            getServer().getPluginManager().registerEvents(new net.factionscore.sidebar.SidebarListener(sidebarManager), this);
+            getServer().getScheduler().scheduleRepeatingTask(this, sidebarManager::refreshAll, sidebarManager.updateSeconds() * 20, false);
+        }
 
         try {
             org.powernukkitx.registry.Registries.ITEM.registerCustomItem(this, ItemHopperTier2.class, ItemHopperTier3.class);

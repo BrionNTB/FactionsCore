@@ -104,9 +104,14 @@ anticheat:
     flags-to-ban: 15
     ban-duration-hours: 72
 
+sidebar:
+  enabled: true
+  update-seconds: 5
+
 stacking:
   mobs:
     enabled: true
+    spawner-only: true   # only mobs produced by spawners stack; natural spawns stay vanilla
     radius: 4.0
     max-stack-size: 64
     excluded:

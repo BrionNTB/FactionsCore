@@ -21,12 +21,15 @@ public abstract class CustomEnchantBookItem extends Item implements CustomItem {
 
     private final String enchantKey;
     private final String displayName;
+    private final String description;
 
-    protected CustomEnchantBookItem(String itemId, String enchantKey, String displayName) {
+    protected CustomEnchantBookItem(String itemId, String enchantKey, String displayName, String description) {
         super(itemId);
         this.enchantKey = enchantKey;
         this.displayName = displayName;
+        this.description = description;
         this.name = displayName + " Book";
+        refreshLore();
     }
 
     public String getEnchantKey() {
@@ -42,6 +45,30 @@ public abstract class CustomEnchantBookItem extends Item implements CustomItem {
         CompoundTag nbt = getOrCreateNbt();
         nbt.putInt(LEVEL_TAG, level);
         setNbt(nbt);
+        refreshLore();
+    }
+
+    private void refreshLore() {
+        setLore(
+                TextFormat.LIGHT_PURPLE + "" + TextFormat.BOLD + displayName + " " + roman(getLevel()),
+                TextFormat.GRAY + "" + TextFormat.ITALIC + description,
+                "",
+                TextFormat.YELLOW + "▶ " + TextFormat.GRAY + "Drag onto an item to apply. " + TextFormat.RED + "No anvil!",
+                TextFormat.YELLOW + "▶ " + TextFormat.GRAY + "Can " + TextFormat.RED + "" + TextFormat.BOLD + "FAIL" + TextFormat.RESET
+                        + TextFormat.GRAY + " and backfire on you...",
+                TextFormat.YELLOW + "▶ " + TextFormat.GRAY + "Drag a stack of " + TextFormat.GREEN + "2" + TextFormat.GRAY + " for better odds!");
+    }
+
+    private static String roman(int level) {
+        return switch (level) {
+            case 1 -> "I";
+            case 2 -> "II";
+            case 3 -> "III";
+            case 4 -> "IV";
+            case 5 -> "V";
+            case 6 -> "VI";
+            default -> String.valueOf(level);
+        };
     }
 
     @Override
@@ -54,7 +81,7 @@ public abstract class CustomEnchantBookItem extends Item implements CustomItem {
     @Override
     public CustomItemDefinition getDefinition() {
         return CustomItemDefinition.customBuilder(this)
-                .name(TextFormat.LIGHT_PURPLE + displayName + " Book")
+                .name(TextFormat.BOLD + "" + TextFormat.LIGHT_PURPLE + displayName + " Book")
                 .texture("book_enchanted")
                 .allowOffHand(false)
                 .creativeCategory(CreativeCategory.ITEMS)

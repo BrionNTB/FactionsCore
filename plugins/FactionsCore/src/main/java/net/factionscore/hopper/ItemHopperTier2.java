@@ -11,8 +11,9 @@ import org.powernukkitx.utils.TextFormat;
 /**
  * Places a real vanilla hopper block (so all the existing item-transfer/redstone-lock logic
  * applies unchanged) tagged as tier 2; {@link HopperTierListener} stamps the tier onto the
- * resulting block entity right after placement. See {@link net.factionscore.hopper.HopperTiers}
- * for the loot-multiplier values.
+ * resulting block entity right after placement. The block_placer component is required so the
+ * Bedrock client predicts the placement -- without it the server ignores the use attempt and the
+ * hopper simply "won't place".
  */
 public final class ItemHopperTier2 extends Item implements CustomItem {
 
@@ -22,16 +23,20 @@ public final class ItemHopperTier2 extends Item implements CustomItem {
         super(ID);
         this.block = Block.get(BlockID.HOPPER);
         this.name = "Hopper II";
+        setLore(
+                TextFormat.YELLOW + "" + TextFormat.BOLD + "1.5x" + TextFormat.RESET + TextFormat.GRAY + " loot from everything it collects.",
+                TextFormat.DARK_GRAY + "" + TextFormat.ITALIC + "Place above a chest or hopper line.");
     }
 
     @Override
     public CustomItemDefinition getDefinition() {
         return CustomItemDefinition.customBuilder(this)
-                .name(TextFormat.YELLOW + "Hopper II")
+                .name(TextFormat.BOLD + "" + TextFormat.YELLOW + "Hopper II")
                 .texture("hopper")
                 .allowOffHand(false)
                 .creativeCategory(CreativeCategory.ITEMS)
                 .creativeGroup("itemGroup.name.hopper")
+                .blockPlacer(BlockID.HOPPER)
                 .glint(true)
                 .build();
     }

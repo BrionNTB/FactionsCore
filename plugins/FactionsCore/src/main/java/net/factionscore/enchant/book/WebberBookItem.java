@@ -4,6 +4,6 @@ public final class WebberBookItem extends CustomEnchantBookItem {
     public static final String ID = "factionscore:book_webber";
 
     public WebberBookItem() {
-        super(ID, "webber", "Webber");
+        super(ID, "webber", "Webber", "Chance to trap your victim in cobwebs.");
     }
 }

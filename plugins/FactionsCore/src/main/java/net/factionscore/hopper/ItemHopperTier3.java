@@ -16,16 +16,20 @@ public final class ItemHopperTier3 extends Item implements CustomItem {
         super(ID);
         this.block = Block.get(BlockID.HOPPER);
         this.name = "Hopper III";
+        setLore(
+                TextFormat.GOLD + "" + TextFormat.BOLD + "3x" + TextFormat.RESET + TextFormat.GRAY + " loot from everything it collects.",
+                TextFormat.DARK_GRAY + "" + TextFormat.ITALIC + "Place above a chest or hopper line.");
     }
 
     @Override
     public CustomItemDefinition getDefinition() {
         return CustomItemDefinition.customBuilder(this)
-                .name(TextFormat.GOLD + "Hopper III")
+                .name(TextFormat.BOLD + "" + TextFormat.GOLD + "Hopper III")
                 .texture("hopper")
                 .allowOffHand(false)
                 .creativeCategory(CreativeCategory.ITEMS)
                 .creativeGroup("itemGroup.name.hopper")
+                .blockPlacer(BlockID.HOPPER)
                 .glint(true)
                 .build();
     }

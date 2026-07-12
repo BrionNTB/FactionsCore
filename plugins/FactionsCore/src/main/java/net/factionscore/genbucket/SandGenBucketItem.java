@@ -7,6 +7,6 @@ public final class SandGenBucketItem extends GenBucketItem {
     public static final String ID = "factionscore:genbucket_sand";
 
     public SandGenBucketItem() {
-        super(ID, BlockID.SAND, TextFormat.YELLOW + "Sand Gen Bucket");
+        super(ID, BlockID.SAND, TextFormat.YELLOW + "" + TextFormat.BOLD + "Sand Gen Bucket");
     }
 }

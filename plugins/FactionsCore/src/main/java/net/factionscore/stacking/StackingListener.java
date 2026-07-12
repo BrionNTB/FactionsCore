@@ -44,6 +44,9 @@ public final class StackingListener implements Listener {
         if (!mobStacks.isEnabled() || !event.isCreature()) return;
         if (!(entity instanceof EntityCreature creature)) return;
         if (mobStacks.isExcluded(creature.getIdentifier())) return;
+        // The engine stamps spawner-produced mobs with this NBT flag at creation (fork patch in
+        // BlockEntityMobSpawner) -- naturally spawned mobs never carry it.
+        if (mobStacks.isSpawnerOnly() && !creature.getNbt().getBoolean("spawner")) return;
 
         Entity mergeTarget = mobStacks.findMergeTarget(creature);
         if (mergeTarget != null) {

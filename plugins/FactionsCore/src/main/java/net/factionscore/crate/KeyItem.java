@@ -4,6 +4,7 @@ import org.powernukkitx.item.Item;
 import org.powernukkitx.item.customitem.CustomItem;
 import org.powernukkitx.item.customitem.CustomItemDefinition;
 import org.powernukkitx.item.customitem.data.CreativeCategory;
+import org.powernukkitx.utils.TextFormat;
 
 /** A crate key: glinting custom item, one id per crate tier, redeemed by right-clicking the matching crate chest. */
 public abstract class KeyItem extends Item implements CustomItem {
@@ -16,6 +17,9 @@ public abstract class KeyItem extends Item implements CustomItem {
         this.crateType = crateType;
         this.displayName = displayName;
         this.name = displayName;
+        setLore(
+                TextFormat.GRAY + "Unlocks one roll of the " + TextFormat.BOLD + crateType + TextFormat.RESET + TextFormat.GRAY + " crate.",
+                TextFormat.DARK_GRAY + "" + TextFormat.ITALIC + "Right-click the crate chest while holding this key.");
     }
 
     public String getCrateType() {

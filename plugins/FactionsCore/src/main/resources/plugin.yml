@@ -7,89 +7,10 @@ description: PvP-tuned factions gamemode for a Bedrock server engine forked and 
 website: https://github.com/brionntb/factionscore
 load: POSTWORLD
 
-commands:
-  f:
-    aliases: [factions, faction]
-    description: Factions command
-    usage: "/f help"
-    permission: factionscore.command.f
-  fadmin:
-    description: Factions admin command
-    usage: "/fadmin help"
-    permission: factionscore.command.fadmin
-  enchant:
-    description: Apply/inspect custom enchants
-    usage: "/enchant help"
-    permission: factionscore.command.enchant
-  stack:
-    description: Mob/spawner stacking controls
-    usage: "/stack help"
-    permission: factionscore.command.stack
-  anticheat:
-    aliases: [ac]
-    description: Anti-cheat inspection and management
-    usage: "/anticheat help"
-    permission: factionscore.command.anticheat
-  worldborder:
-    aliases: [wb, border]
-    description: World border inspection/administration
-    usage: "/worldborder help"
-    permission: factionscore.command.worldborder
-  shop:
-    description: Teleport to the shop
-    usage: "/shop"
-    permission: factionscore.command.shop
-  setshop:
-    description: Set the shop location
-    usage: "/setshop"
-    permission: factionscore.command.setshop
-  sell:
-    description: Sell mob/crop loot
-    usage: "/sell"
-    permission: factionscore.command.sell
-  balance:
-    aliases: [bal, money]
-    description: Check a balance
-    usage: "/balance [player]"
-    permission: factionscore.command.balance
-  pay:
-    description: Send money to another player
-    usage: "/pay <player> <amount>"
-    permission: factionscore.command.balance
-  baltop:
-    description: Richest players leaderboard
-    usage: "/baltop"
-    permission: factionscore.command.balance
-  wild:
-    aliases: [rtp]
-    description: Random wilderness teleport
-    usage: "/wild"
-    permission: factionscore.command.wild
-  kit:
-    aliases: [kits]
-    description: Claim a kit
-    usage: "/kit [name]"
-    permission: factionscore.command.kit
-  bounty:
-    description: Place or view kill bounties
-    usage: "/bounty <set|list>"
-    permission: factionscore.command.bounty
-  koth:
-    description: King of the Hill event
-    usage: "/koth status"
-    permission: factionscore.command.koth
-  envoy:
-    description: Supply-drop event administration
-    usage: "/envoy <start|setcenter|clear>"
-    permission: factionscore.command.envoy
-  crate:
-    description: Crate administration
-    usage: "/crate <set|remove|give>"
-    permission: factionscore.command.crate
-  sellwand:
-    description: Give a sell wand
-    usage: "/sellwand <player> [uses]"
-    permission: factionscore.command.sellwand
+# NOTE: no `commands:` section on purpose. Declaring commands here makes the engine register
+# placeholder PluginCommands at load time, which then win the name conflict against the real
+# Command objects this plugin registers in onEnable -- every command turns into a dead shell.
+# All commands are registered programmatically with their permission set in the constructor.
 
 permissions:
   factionscore.command.f:
@@ -160,4 +81,7 @@ permissions:
     default: op
   factionscore.kit.pvp:
     description: Access to the pvp kit
+    default: op
+  factionscore.command.spawner:
+    description: Give pre-typed mob spawner items
     default: op

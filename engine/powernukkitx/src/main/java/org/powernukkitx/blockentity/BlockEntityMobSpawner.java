@@ -157,7 +157,13 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                         continue;
                     }
 
-                    Entity ent = Entity.createEntity(this.entityId, pos);
+                    // The "spawner" marker must be in the creation NBT, not stamped afterwards:
+                    // EntitySpawnEvent fires inside entity init, and plugins that distinguish
+                    // spawner-spawned mobs (e.g. spawner-only stacking) read the flag from that
+                    // event, which runs before any post-creation putBoolean could.
+                    CompoundTag entityNbt = Entity.getDefaultNBT(pos).putBoolean("spawner", true);
+                    Entity ent = Entity.createEntity(this.entityId,
+                            this.level.getChunk(pos.getChunkX(), pos.getChunkZ(), true), entityNbt);
                     if (ent instanceof EntityMob && getLevel().getFullLight(this) > 7) {
                         ent.close();
                         continue;
@@ -171,7 +177,6 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                     }
 
                     if (ent != null) {
-                        ent.getNbt().putBoolean("spawner", true);
                         ent.spawnToAll();
                         if (isEntityInSpawnerDetectionArea(ent)) nearbyEntities++;
                     }

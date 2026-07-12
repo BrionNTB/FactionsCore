@@ -19,6 +19,10 @@ public final class SellWandItem extends Item implements CustomItem {
     public SellWandItem() {
         super(ID);
         this.name = "Sell Wand";
+        setLore(
+                TextFormat.GRAY + "Right-click a " + TextFormat.GOLD + "chest" + TextFormat.GRAY + " to sell everything inside",
+                TextFormat.GRAY + "at current " + TextFormat.GREEN + "/sell" + TextFormat.GRAY + " prices.",
+                TextFormat.DARK_GRAY + "" + TextFormat.ITALIC + "Get a charged one with /sellwand.");
     }
 
     public int getUses() {
@@ -30,7 +34,10 @@ public final class SellWandItem extends Item implements CustomItem {
         CompoundTag nbt = getOrCreateNbt();
         nbt.putInt(USES_TAG, uses);
         setNbt(nbt);
-        setLore(TextFormat.GRAY + "Uses left: " + uses, TextFormat.GRAY + "Right-click a chest to sell its contents");
+        setLore(
+                TextFormat.GREEN + "" + TextFormat.BOLD + uses + TextFormat.RESET + TextFormat.GRAY + " uses left",
+                TextFormat.GRAY + "Right-click a " + TextFormat.GOLD + "chest" + TextFormat.GRAY + " to sell everything inside",
+                TextFormat.GRAY + "at current " + TextFormat.GREEN + "/sell" + TextFormat.GRAY + " prices.");
     }
 
     @Override
@@ -41,7 +48,7 @@ public final class SellWandItem extends Item implements CustomItem {
     @Override
     public CustomItemDefinition getDefinition() {
         return CustomItemDefinition.customBuilder(this)
-                .name(TextFormat.GOLD + "Sell Wand")
+                .name(TextFormat.BOLD + "" + TextFormat.GOLD + "Sell Wand")
                 .texture("blaze_rod")
                 .allowOffHand(false)
                 .creativeCategory(CreativeCategory.ITEMS)
