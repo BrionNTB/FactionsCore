@@ -25,12 +25,15 @@ public final class SidebarManager {
 
     private final FactionManager factions;
     private final EconomyManager economy;
+    private final net.factionscore.misc.WarmupManager warmups;
     private final Config config;
     private final Map<UUID, Scoreboard> boards = new ConcurrentHashMap<>();
 
-    public SidebarManager(FactionManager factions, EconomyManager economy, Config config) {
+    public SidebarManager(FactionManager factions, EconomyManager economy,
+                          net.factionscore.misc.WarmupManager warmups, Config config) {
         this.factions = factions;
         this.economy = economy;
+        this.warmups = warmups;
         this.config = config;
     }
 
@@ -39,7 +42,8 @@ public final class SidebarManager {
     }
 
     public int updateSeconds() {
-        return Math.max(1, config.getInt("sidebar.update-seconds", 5));
+        // 1s so teleport countdowns tick down live in the sidebar.
+        return Math.max(1, config.getInt("sidebar.update-seconds", 1));
     }
 
     /** Runs on the main thread on a repeating task. */
@@ -53,12 +57,16 @@ public final class SidebarManager {
     private void refresh(Player player) {
         Scoreboard board = boards.computeIfAbsent(player.getUniqueId(), id -> {
             Scoreboard created = new Scoreboard("fc_" + id.toString().substring(0, 8),
-                    TextFormat.BOLD + "" + TextFormat.GOLD + "» " + TextFormat.YELLOW + "FactionsCore" + TextFormat.GOLD + " «");
+                    TextFormat.BOLD + "" + TextFormat.DARK_RED + "Wicked" + TextFormat.GOLD + "Raids");
             created.addViewer(player, DisplaySlot.SIDEBAR);
             return created;
         });
 
         List<String> lines = new ArrayList<>();
+        String countdown = warmups.countdownLine(player.getUniqueId());
+        if (countdown != null) {
+            lines.add(countdown);
+        }
         lines.add(TextFormat.GRAY + "");
         lines.add(TextFormat.GOLD + "" + TextFormat.BOLD + "Balance");
         lines.add(TextFormat.GREEN + " " + EconomyManager.format(economy.getBalance(player.getUniqueId())));

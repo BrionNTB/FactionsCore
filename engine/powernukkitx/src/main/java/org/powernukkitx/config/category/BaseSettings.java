@@ -24,10 +24,10 @@ public class BaseSettings extends OkaeriConfig {
     @Comment("pnx.settings.base.allowlist.message")
     String allowListMessage = "Server is white-listed";
     @Comment("pnx.settings.base.motd")
-    String motd = "PowerNukkitX Server";
+    String motd = "WickedRaids";
     @CustomKey("sub-motd")
     @Comment("pnx.settings.base.submotd")
-    String subMotd = "powernukkitx.org";
+    String subMotd = "Factions PvP";
     @Comment("pnx.settings.base.language")
     String language = "eng";
     @Comment("pnx.settings.base.forcetranslate")

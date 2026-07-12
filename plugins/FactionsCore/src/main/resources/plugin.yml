@@ -24,7 +24,7 @@ permissions:
     default: op
   factionscore.command.stack:
     description: Use mob/spawner stacking commands
-    default: op
+    default: true
   factionscore.command.anticheat:
     description: Use anti-cheat commands
     default: op
@@ -37,9 +37,11 @@ permissions:
   factionscore.bypass.combatlog:
     description: Exempt a player from the combat-log kill/teleport-block
     default: op
+  # Border bypass defaults to false (not op!) -- otherwise every op walks straight through the
+  # border and reports it "non existent". Grant it explicitly if someone really needs it.
   factionscore.bypass.border:
     description: Exempt a player from world border enforcement
-    default: op
+    default: false
   factionscore.command.worldborder:
     description: Inspect/administer the world border
     default: op
@@ -85,3 +87,6 @@ permissions:
   factionscore.command.spawner:
     description: Give pre-typed mob spawner items
     default: op
+  factionscore.command.spawn:
+    description: Teleport to spawn
+    default: true

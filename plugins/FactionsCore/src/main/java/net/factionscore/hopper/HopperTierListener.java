@@ -11,9 +11,15 @@ import org.powernukkitx.item.Item;
 
 public final class HopperTierListener implements Listener {
 
+    private final net.factionscore.hologram.HologramManager holograms;
+
+    public HopperTierListener(net.factionscore.hologram.HologramManager holograms) {
+        this.holograms = holograms;
+    }
+
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        var block = event.getBlockReplace();
+        var block = event.getBlock();
         if (!BlockID.HOPPER.equals(block.getId())) {
             return;
         }
@@ -25,6 +31,7 @@ public final class HopperTierListener implements Listener {
         BlockEntity blockEntity = block.getLevel().getBlockEntity(block);
         if (blockEntity instanceof BlockEntityHopper hopper) {
             hopper.setTier(tier);
+            holograms.set(block.getLevel(), block, net.factionscore.hologram.HologramManager.hopperTitle(tier));
         }
     }
 
@@ -39,6 +46,7 @@ public final class HopperTierListener implements Listener {
             return;
         }
         event.setDrops(new Item[]{itemForTier(hopper.getTier())});
+        holograms.remove(block.getLevel(), block);
     }
 
     private int tierOf(Item item) {

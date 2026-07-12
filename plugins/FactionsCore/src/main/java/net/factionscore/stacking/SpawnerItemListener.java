@@ -17,14 +17,16 @@ import org.powernukkitx.registry.Registries;
 public final class SpawnerItemListener implements Listener {
 
     private final Plugin plugin;
+    private final net.factionscore.hologram.HologramManager holograms;
 
-    public SpawnerItemListener(Plugin plugin) {
+    public SpawnerItemListener(Plugin plugin, net.factionscore.hologram.HologramManager holograms) {
         this.plugin = plugin;
+        this.holograms = holograms;
     }
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        var block = event.getBlockReplace();
+        var block = event.getBlock();
         if (!BlockID.MOB_SPAWNER.equals(block.getId())) return;
         Item item = event.getItem();
         if (item == null || !item.hasNbt() || !item.getNbt().contains(SpawnerCommand.MOB_TAG)) return;
@@ -40,6 +42,7 @@ public final class SpawnerItemListener implements Listener {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof BlockEntityMobSpawner spawner) {
                 spawner.setSpawnEntityType(networkId);
+                holograms.set(level, pos, net.factionscore.hologram.HologramManager.spawnerTitle(spawner));
             }
         }, 1);
     }

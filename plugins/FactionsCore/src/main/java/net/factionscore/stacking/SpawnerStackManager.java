@@ -21,13 +21,17 @@ public final class SpawnerStackManager {
         return config.getBoolean("stacking.spawners.enabled", true);
     }
 
+    public int maxStackSize() {
+        return config.getInt("stacking.spawners.max-stack-size", 15);
+    }
+
     public int stackLevelOf(BlockEntityMobSpawner spawner) {
         return spawner.getMinSpawnCount();
     }
 
     /** @return the new stack level, or -1 if already at the configured max. */
     public int increment(BlockEntityMobSpawner spawner) {
-        int max = config.getInt("stacking.spawners.max-stack-size", 64);
+        int max = maxStackSize();
         int current = spawner.getMinSpawnCount();
         if (current >= max) {
             return -1;

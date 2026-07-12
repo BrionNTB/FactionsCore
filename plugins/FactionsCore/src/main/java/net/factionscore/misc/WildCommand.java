@@ -24,14 +24,16 @@ public final class WildCommand extends Command {
 
     private final FactionManager factions;
     private final WorldBorderManager border;
+    private final WarmupManager warmups;
     private final Config config;
     private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
 
-    public WildCommand(FactionManager factions, WorldBorderManager border, Config config) {
+    public WildCommand(FactionManager factions, WorldBorderManager border, WarmupManager warmups, Config config) {
         super("wild", "Teleport to a random wilderness location", "/wild", new String[]{"rtp"});
         this.setPermission("factionscore.command.wild");
         this.factions = factions;
         this.border = border;
+        this.warmups = warmups;
         this.config = config;
     }
 
@@ -50,6 +52,14 @@ public final class WildCommand extends Command {
             return true;
         }
 
+        warmups.start(player, "Wild", () -> {
+            if (!player.isOnline()) return;
+            randomTeleport(player);
+        });
+        return true;
+    }
+
+    private void randomTeleport(Player player) {
         Level level = player.getLevel();
         double maxRadius = Math.min(config.getDouble("wild.max-radius", 10000), border.radiusFor(level) - 16);
         double minRadius = config.getDouble("wild.min-radius", 500);
@@ -75,14 +85,13 @@ public final class WildCommand extends Command {
                 continue;
             }
 
-            cooldowns.put(player.getUniqueId(), now);
+            cooldowns.put(player.getUniqueId(), System.currentTimeMillis());
             player.teleport(new Position(x + 0.5, y + 1.5, z + 0.5, level));
             player.sendMessage(TextFormat.GREEN + "Whoosh! You landed at " + x + ", " + (y + 1) + ", " + z + ".");
-            return true;
+            return;
         }
 
         player.sendMessage(TextFormat.RED + "Couldn't find a safe spot -- try again (nearby terrain may still be generating).");
-        return true;
     }
 
     private boolean isLiquid(String id) {

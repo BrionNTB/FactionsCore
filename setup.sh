@@ -48,6 +48,13 @@ else
     echo "[2/6] Server already configured, skipping first boot."
 fi
 
+# Rename the server in-game: the MOTD lives in pnx.yml. Match only the bare "motd:" key --
+# "sub-motd:" also ends in motd: but starts with "sub-", so ^\s*motd: can't hit it.
+if [ -f "$SERVER_DIR/pnx.yml" ]; then
+    sed -E -i 's/^([[:space:]]*)motd:.*/\1motd: "WickedRaids"/' "$SERVER_DIR/pnx.yml"
+    sed -E -i 's/^([[:space:]]*)sub-motd:.*/\1sub-motd: "Factions PvP"/' "$SERVER_DIR/pnx.yml"
+fi
+
 if [ -n "$GAMERTAG" ]; then
     LOWER=$(echo "$GAMERTAG" | tr '[:upper:]' '[:lower:]')
     if ! grep -qixF "$LOWER" "$SERVER_DIR/ops.txt" 2>/dev/null; then

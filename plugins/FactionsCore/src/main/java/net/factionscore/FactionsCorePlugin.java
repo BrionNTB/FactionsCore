@@ -74,6 +74,17 @@ public final class FactionsCorePlugin extends PluginBase {
         FactionValueManager factionValueManager = new FactionValueManager(database, factionManager, getConfig());
         net.factionscore.economy.EconomyManager economyManager = new net.factionscore.economy.EconomyManager(database);
 
+        // Floating text over tiered hoppers/stacked spawners; reconcile rebuilds them from block
+        // entities after restarts and chunk loads, join listener resends them to new players.
+        net.factionscore.hologram.HologramManager hologramManager = new net.factionscore.hologram.HologramManager();
+        getServer().getPluginManager().registerEvents(new net.factionscore.hologram.HologramListener(hologramManager, this), this);
+        getServer().getScheduler().scheduleRepeatingTask(this, hologramManager::reconcile, 600, false);
+
+        // Teleport warmups (/shop, /wild, /spawn): countdown lives in the sidebar; being hit cancels.
+        net.factionscore.misc.WarmupManager warmupManager = new net.factionscore.misc.WarmupManager(getConfig());
+        getServer().getPluginManager().registerEvents(new net.factionscore.misc.WarmupListener(warmupManager), this);
+        getServer().getScheduler().scheduleRepeatingTask(this, warmupManager::tick, 20, false);
+
         net.factionscore.faction.listener.FactionChatListener factionChatListener =
                 new net.factionscore.faction.listener.FactionChatListener(factionManager);
         getServer().getCommandMap().register("factionscore", new FactionsCommand(factionManager, factionValueManager, factionChatListener));
@@ -103,13 +114,13 @@ public final class FactionsCorePlugin extends PluginBase {
 
         MobStackManager mobStackManager = new MobStackManager(getConfig());
         SpawnerStackManager spawnerStackManager = new SpawnerStackManager(getConfig());
-        getServer().getPluginManager().registerEvents(new StackingListener(mobStackManager, spawnerStackManager, factionManager, factionValueManager), this);
+        getServer().getPluginManager().registerEvents(new StackingListener(mobStackManager, spawnerStackManager, factionManager, factionValueManager, hologramManager), this);
         getServer().getCommandMap().register("factionscore", new StackCommand());
         getServer().getCommandMap().register("factionscore", new net.factionscore.stacking.SpawnerCommand());
-        getServer().getPluginManager().registerEvents(new net.factionscore.stacking.SpawnerItemListener(this), this);
+        getServer().getPluginManager().registerEvents(new net.factionscore.stacking.SpawnerItemListener(this, hologramManager), this);
 
         net.factionscore.sidebar.SidebarManager sidebarManager =
-                new net.factionscore.sidebar.SidebarManager(factionManager, economyManager, getConfig());
+                new net.factionscore.sidebar.SidebarManager(factionManager, economyManager, warmupManager, getConfig());
         if (sidebarManager.isEnabled()) {
             getServer().getPluginManager().registerEvents(new net.factionscore.sidebar.SidebarListener(sidebarManager), this);
             getServer().getScheduler().scheduleRepeatingTask(this, sidebarManager::refreshAll, sidebarManager.updateSeconds() * 20, false);
@@ -120,7 +131,7 @@ public final class FactionsCorePlugin extends PluginBase {
         } catch (org.powernukkitx.registry.RegisterException e) {
             getLogger().warning("Failed to register custom hopper items: " + e.getMessage());
         }
-        getServer().getPluginManager().registerEvents(new HopperTierListener(), this);
+        getServer().getPluginManager().registerEvents(new HopperTierListener(hologramManager), this);
 
         CombatTagManager combatTagManager = new CombatTagManager(getConfig());
         getServer().getPluginManager().registerEvents(new CombatLogListener(combatTagManager, factionManager, getConfig()), this);
@@ -147,7 +158,7 @@ public final class FactionsCorePlugin extends PluginBase {
         }
 
         ShopManager shopManager = new ShopManager(database);
-        getServer().getCommandMap().register("factionscore", new ShopCommand(shopManager));
+        getServer().getCommandMap().register("factionscore", new ShopCommand(shopManager, warmupManager));
         getServer().getCommandMap().register("factionscore", new SetShopCommand(shopManager));
 
         SellManager sellManager = new SellManager(database, getConfig(), economyManager);
@@ -158,7 +169,8 @@ public final class FactionsCorePlugin extends PluginBase {
         getServer().getCommandMap().register("factionscore", new net.factionscore.economy.BalanceCommand(economyManager));
         getServer().getCommandMap().register("factionscore", new net.factionscore.economy.PayCommand(economyManager));
         getServer().getCommandMap().register("factionscore", new net.factionscore.economy.BalTopCommand(economyManager));
-        getServer().getCommandMap().register("factionscore", new net.factionscore.misc.WildCommand(factionManager, worldBorderManager, getConfig()));
+        getServer().getCommandMap().register("factionscore", new net.factionscore.misc.WildCommand(factionManager, worldBorderManager, warmupManager, getConfig()));
+        getServer().getCommandMap().register("factionscore", new net.factionscore.misc.SpawnCommand(warmupManager));
 
         net.factionscore.kit.KitManager kitManager = new net.factionscore.kit.KitManager(database, getConfig());
         getServer().getCommandMap().register("factionscore", new net.factionscore.kit.KitCommand(kitManager));

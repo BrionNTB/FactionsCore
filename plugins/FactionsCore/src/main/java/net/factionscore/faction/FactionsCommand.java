@@ -49,6 +49,7 @@ public final class FactionsCommand extends Command {
             case "value" -> value(sender, args);
             case "top" -> top(sender);
             case "chat", "c" -> toggleChat(sender);
+            case "map" -> map(sender);
             default -> sendHelp(sender);
         }
         return true;
@@ -60,7 +61,7 @@ public final class FactionsCommand extends Command {
                 "/f create <name>", "/f disband", "/f invite <player>", "/f join <faction>",
                 "/f leave", "/f kick <player>", "/f claim", "/f unclaim", "/f sethome", "/f home",
                 "/f ally|enemy|truce|neutral <faction>", "/f power", "/f info [faction]", "/f list",
-                "/f value [faction]", "/f top", "/f chat"
+                "/f value [faction]", "/f top", "/f chat", "/f map"
         }) {
             sender.sendMessage(TextFormat.YELLOW + line);
         }
@@ -68,6 +69,45 @@ public final class FactionsCommand extends Command {
 
     private Player asPlayer(CommandSender sender) {
         return sender instanceof Player player ? player : null;
+    }
+
+    /**
+     * Chat chunk map centered on the player, so claim edges are visible in-game: green = your
+     * faction's claims, red = another faction, gray = wilderness, white + = the chunk you stand in.
+     */
+    private void map(CommandSender sender) {
+        Player player = asPlayer(sender);
+        if (player == null) {
+            sender.sendMessage(TextFormat.RED + "Only players can use /f map.");
+            return;
+        }
+        String levelName = player.getLevel().getName();
+        int centerX = player.getChunkX();
+        int centerZ = player.getChunkZ();
+        Faction own = factions.getByMember(player.getUniqueId()).orElse(null);
+
+        sender.sendMessage(TextFormat.GOLD + "" + TextFormat.BOLD + "--- Claim Map " + TextFormat.RESET
+                + TextFormat.GRAY + "(chunk " + centerX + ", " + centerZ + ") " + TextFormat.GOLD + TextFormat.BOLD + "---");
+        int radius = 4;
+        for (int dz = -radius; dz <= radius; dz++) {
+            StringBuilder row = new StringBuilder();
+            for (int dx = -radius; dx <= radius; dx++) {
+                Faction owner = factions.getClaimOwner(levelName, centerX + dx, centerZ + dz).orElse(null);
+                boolean here = dx == 0 && dz == 0;
+                String symbol = here ? "+" : "■";
+                if (owner == null) {
+                    row.append(here ? TextFormat.WHITE + "" + TextFormat.BOLD : TextFormat.DARK_GRAY.toString()).append(symbol);
+                } else if (own != null && owner.getId().equals(own.getId())) {
+                    row.append(here ? TextFormat.GREEN + "" + TextFormat.BOLD : TextFormat.GREEN.toString()).append(symbol);
+                } else {
+                    row.append(here ? TextFormat.RED + "" + TextFormat.BOLD : TextFormat.RED.toString()).append(symbol);
+                }
+                row.append(TextFormat.RESET).append(" ");
+            }
+            sender.sendMessage(row.toString());
+        }
+        sender.sendMessage(TextFormat.GREEN + "■ yours  " + TextFormat.RED + "■ enemy/other  "
+                + TextFormat.DARK_GRAY + "■ wilderness  " + TextFormat.WHITE + "+ you");
     }
 
     private void create(CommandSender sender, String[] args) {

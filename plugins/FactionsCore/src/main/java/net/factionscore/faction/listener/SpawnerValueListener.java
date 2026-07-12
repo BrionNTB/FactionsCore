@@ -21,7 +21,7 @@ public final class SpawnerValueListener implements Listener {
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        var block = event.getBlockReplace();
+        var block = event.getBlock();
         if (!BlockID.MOB_SPAWNER.equals(block.getId())) return;
         factions.getClaimOwner(block.getLocation()).ifPresent(owner ->
                 values.onSpawnerPlaced(block.getLevel(), block, owner));

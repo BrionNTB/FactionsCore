@@ -164,8 +164,11 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
                     CompoundTag entityNbt = Entity.getDefaultNBT(pos).putBoolean("spawner", true);
                     Entity ent = Entity.createEntity(this.entityId,
                             this.level.getChunk(pos.getChunkX(), pos.getChunkZ(), true), entityNbt);
-                    if (ent instanceof EntityMob && getLevel().getFullLight(this) > 7) {
-                        ent.close();
+                    // Fork change: no light-level gate for spawner mobs. Vanilla suppresses hostile
+                    // spawns above light 7, which makes purchased/placed spawners silently do
+                    // nothing in a lit base -- on a factions server spawners are the economy and
+                    // must produce regardless of lighting.
+                    if (ent == null) {
                         continue;
                     }
                     CreatureSpawnEvent ev = new CreatureSpawnEvent(this.entityId, pos, new CompoundTag(), CreatureSpawnEvent.SpawnReason.SPAWNER);
