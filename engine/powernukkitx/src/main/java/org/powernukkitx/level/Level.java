@@ -5455,6 +5455,13 @@ public class Level implements Metadatable {
     }
 
     public boolean isRayCollidingWithBlocks(double srcX, double srcY, double srcZ, double dstX, double dstY, double dstZ, double stepSize) {
+        // Fork fix (Java 1.8.8 parity): upstream rounded each sample point to integers and then
+        // asked whether that integer corner was inside the block's collision box, which (a) shifted
+        // samples up to half a block sideways and (b) made an entity standing exactly on a block
+        // boundary -- every TNT resting on the ground -- count its own floor as blocking the ray.
+        // Ground-level explosions then computed zero exposure: no blast knockback, no damage, no
+        // cannons. Sample the actual fractional point and attribute it to the block it is floored
+        // into, like vanilla's ray trace.
         Vector3 direction = new Vector3(dstX - srcX, dstY - srcY, dstZ - srcZ);
         if (direction.x == 0.0 && direction.y == 0.0 && direction.z == 0.0) {
             return false;
@@ -5464,14 +5471,16 @@ public class Level implements Metadatable {
         Vector3 normalizedDirection = direction.divide(length);
 
         for (double t = 0.0; t < length; t += stepSize) {
-            int x = (int) Math.round(srcX + normalizedDirection.x * t);
-            int y = (int) Math.round(srcY + normalizedDirection.y * t);
-            int z = (int) Math.round(srcZ + normalizedDirection.z * t);
+            double px = srcX + normalizedDirection.x * t;
+            double py = srcY + normalizedDirection.y * t;
+            double pz = srcZ + normalizedDirection.z * t;
 
-            Block block = getBlock(x, y, z);
-            if (block != null && block.getCollisionBoundingBox() != null) {
+            Block block = getBlock(NukkitMath.floorDouble(px), NukkitMath.floorDouble(py), NukkitMath.floorDouble(pz));
+            // canPassThrough guards against air/liquids/plants: air reports a full collision box
+            // in this engine, which would otherwise mark every ray as blocked.
+            if (block != null && !block.canPassThrough() && block.getCollisionBoundingBox() != null) {
                 AxisAlignedBB bb = block.getCollisionBoundingBox();
-                if (bb.isVectorInside(x, y, z)) {
+                if (bb.isVectorInside(px, py, pz)) {
                     return true;
                 }
             }
@@ -5481,6 +5490,12 @@ public class Level implements Metadatable {
     }
 
     public float getBlockDensity(Vector3 source, AxisAlignedBB boundingBox) {
+        // Fork fix (Java 1.8.8 parity): this is the explosion "exposure" factor. Upstream sampled
+        // X/Z without adding the bounding box minimum (rays aimed near the world origin instead of
+        // the target) and returned the fraction of rays that were BLOCKED, which inverts blast
+        // damage/knockback: a fully exposed target scored 0 and took nothing. Vanilla samples
+        // points inside the target's bounding box and returns the fraction of rays that reach the
+        // source unobstructed (1.0 = fully exposed).
         double diffX = boundingBox.getMaxX() - boundingBox.getMinX();
         double diffY = boundingBox.getMaxY() - boundingBox.getMinY();
         double diffZ = boundingBox.getMaxZ() - boundingBox.getMinZ();
@@ -5493,28 +5508,27 @@ public class Level implements Metadatable {
         }
 
         double xOffset = (1 - Math.floor(1 / xInterval) * xInterval) / 2;
-        double yOffset = boundingBox.getMinY();
         double zOffset = (1 - Math.floor(1 / zInterval) * zInterval) / 2;
 
-        int visibleBlocks = 0;
-        int totalBlocks = 0;
+        int unobstructedRays = 0;
+        int totalRays = 0;
 
         for (float x = 0; x <= 1; x = (float) ((double) x + xInterval)) {
-            final double fromX = Math.fma(x, diffX, xOffset);
+            final double fromX = boundingBox.getMinX() + x * diffX + xOffset;
             for (float y = 0; y <= 1; y = (float) ((double) y + yInterval)) {
-                final double fromY = Math.fma(y, diffY, yOffset);
+                final double fromY = boundingBox.getMinY() + y * diffY;
                 for (float z = 0; z <= 1; z = (float) ((double) z + zInterval)) {
-                    totalBlocks++;
-                    final double fromZ = Math.fma(z, diffZ, zOffset);
+                    totalRays++;
+                    final double fromZ = boundingBox.getMinZ() + z * diffZ + zOffset;
 
-                    if (this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
-                        visibleBlocks++;
+                    if (!this.isRayCollidingWithBlocks(source.x, source.y, source.z, fromX, fromY, fromZ, 0.3)) {
+                        unobstructedRays++;
                     }
                 }
             }
         }
 
-        return (float) visibleBlocks / (float) totalBlocks;
+        return (float) unobstructedRays / (float) totalRays;
     }
 
     public VibrationManager getVibrationManager() {

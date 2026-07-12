@@ -26,11 +26,13 @@ import org.powernukkitx.utils.TextFormat;
  */
 public final class TntTestCommand extends Command implements Listener {
 
+    private final org.powernukkitx.plugin.Plugin plugin;
     private volatile CommandSender pending;
 
-    public TntTestCommand() {
-        super("tnttest", "Diagnose TNT block damage at your position", "/tnttest");
+    public TntTestCommand(org.powernukkitx.plugin.Plugin plugin) {
+        super("tnttest", "Diagnose TNT block damage at your position", "/tnttest [cannon]");
         this.setPermission("factionscore.command.fadmin");
+        this.plugin = plugin;
     }
 
     @Override
@@ -43,6 +45,10 @@ public final class TntTestCommand extends Command implements Listener {
         } else {
             level = Server.getInstance().getDefaultLevel();
             pos = level.getSafeSpawn().add(0.5, 0, 0.5);
+        }
+
+        if (args.length > 0 && args[0].equalsIgnoreCase("cannon")) {
+            return cannonTest(sender, level, pos);
         }
 
         sender.sendMessage(TextFormat.YELLOW + "[tnttest] gamerule tntExplodes = "
@@ -64,6 +70,50 @@ public final class TntTestCommand extends Command implements Listener {
         pending = sender;
         tnt.spawnToAll();
         sender.sendMessage(TextFormat.YELLOW + "[tnttest] TNT spawned at your feet -- step back! Exploding in 2 seconds...");
+        return true;
+    }
+
+    /**
+     * Cannon physics probe: detonates one TNT next to a longer-fused one and reports how far the
+     * blast launched it. Java 1.8.8 cannons are built entirely on this propulsion, so "launched
+     * 0.0 blocks" means cannons cannot work and the explosion knockback path is broken.
+     */
+    private boolean cannonTest(CommandSender sender, Level level, Vector3 pos) {
+        if (!(sender instanceof Player)) {
+            // Console runs get a blast-proof platform high in the sky: world spawn may be ocean,
+            // and TNT sinking through water would measure water drag instead of knockback.
+            pos = new Vector3(pos.getFloorX() + 0.5, 150, pos.getFloorZ() + 0.5);
+            for (int dx = -3; dx <= 3; dx++) {
+                for (int dz = -3; dz <= 3; dz++) {
+                    level.setBlock(new Vector3(pos.getFloorX() + dx, 149, pos.getFloorZ() + dz),
+                            org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.OBSIDIAN));
+                }
+            }
+        }
+        CompoundTag chargeNbt = Entity.getDefaultNBT(pos.add(0, 1, 0)).putByte("Fuse", 20);
+        Entity charge = Entity.createEntity(EntityID.TNT, level.getChunk(pos.getChunkX(), pos.getChunkZ(), true), chargeNbt);
+        Vector3 projectileStart = pos.add(1.2, 1, 0);
+        CompoundTag projectileNbt = Entity.getDefaultNBT(projectileStart).putByte("Fuse", 120);
+        Entity projectile = Entity.createEntity(EntityID.TNT, level.getChunk(pos.getChunkX(), pos.getChunkZ(), true), projectileNbt);
+        if (charge == null || projectile == null) {
+            sender.sendMessage(TextFormat.RED + "[tnttest] could not spawn the TNT entities!");
+            return true;
+        }
+        charge.spawnToAll();
+        projectile.spawnToAll();
+        sender.sendMessage(TextFormat.YELLOW + "[tnttest] cannon probe armed -- step back! Measuring in 4 seconds...");
+        Server.getInstance().getScheduler().scheduleDelayedTask(plugin, () -> {
+            if (projectile.isClosed()) {
+                sender.sendMessage(TextFormat.RED + "[tnttest] projectile TNT vanished before it could be measured.");
+                return;
+            }
+            double travelled = Math.sqrt(Math.pow(projectile.x - projectileStart.x, 2) + Math.pow(projectile.z - projectileStart.z, 2));
+            if (travelled < 0.5) {
+                sender.sendMessage(TextFormat.RED + String.format("[tnttest] projectile only moved %.2f blocks -- explosion knockback is broken.", travelled));
+            } else {
+                sender.sendMessage(TextFormat.GREEN + String.format("[tnttest] blast launched the projectile %.1f blocks -- cannon physics working.", travelled));
+            }
+        }, 80);
         return true;
     }
 

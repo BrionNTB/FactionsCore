@@ -109,6 +109,20 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
     }
 
     @Override
+    public boolean place(@NotNull Item item, @NotNull Block block, @NotNull Block target, @NotNull BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        // Java parity (fork fix): TNT placed against an existing power source ignites immediately.
+        // updateAround only notifies the placed block's neighbors, so without this check the TNT
+        // would sit inert next to a redstone block/torch until something else updated it.
+        if (this.level.getServer().getSettings().gameplaySettings().enableRedstone() && this.isGettingPower()) {
+            this.prime(80, player);
+        }
+        return true;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone()) {
             return 0;

@@ -172,7 +172,7 @@ public final class FactionsCorePlugin extends PluginBase {
         getServer().getCommandMap().register("factionscore", new net.factionscore.economy.BalTopCommand(economyManager));
         getServer().getCommandMap().register("factionscore", new net.factionscore.misc.WildCommand(factionManager, worldBorderManager, warmupManager, getConfig()));
         getServer().getCommandMap().register("factionscore", new net.factionscore.misc.SpawnCommand(warmupManager));
-        net.factionscore.misc.TntTestCommand tntTest = new net.factionscore.misc.TntTestCommand();
+        net.factionscore.misc.TntTestCommand tntTest = new net.factionscore.misc.TntTestCommand(this);
         getServer().getCommandMap().register("factionscore", tntTest);
         getServer().getPluginManager().registerEvents(tntTest, this);
 

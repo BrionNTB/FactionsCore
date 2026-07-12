@@ -249,13 +249,18 @@ public class Explosion {
             double distance = entity.distance(this.source) / explosionSize;
 
             if (distance <= 1) {
-                Vector3 motion = entity.subtract(this.source).normalize();
+                // Java 1.8.8 aims the knockback ray at the target's eye position, not its feet --
+                // this is what gives cannon-propelled TNT its upward arc.
+                Vector3 motion = new Vector3(entity.x - this.source.x,
+                        entity.y + entity.getEyeHeight() - this.source.y,
+                        entity.z - this.source.z).normalize();
 
                 float blockDensity = level.getBlockDensity(this.source, entity.boundingBox);
                 double force = this.size * 2.0F;
                 double d = entity.distance(source) / force;
                 double impact = (1.0D - d) * blockDensity;
-                float entityDamageAmount = (float) ((float) (impact * impact + impact) / 2.0D * 7.0D * force + 1.0D);
+                // Java 1.8.8 blast damage: ((impact^2 + impact) / 2) * 8 * (size*2) + 1
+                float entityDamageAmount = (float) ((float) (impact * impact + impact) / 2.0D * 8.0D * force + 1.0D);
                 float damage = this.doesDamage ? entityDamageAmount : 0f;
 
                 if (this.what instanceof Entity) {
