@@ -30,6 +30,9 @@ factions:
     spawner-value: 5000
 
 combat:
+  # Re-enable the tntExplodes/mobGriefing game rules at startup if something turned them off
+  # (an opped client's world-settings screen can). Off = explosions boom but break no blocks.
+  force-explosion-gamerules: true
   # Bedrock never implemented the Java 1.9+ attack-cooldown/"sword sweep" system,
   # so combat here is already closer to Java 1.8.8 by default. These let owners
   # tune it further to match 1.8 PvP feel exactly.

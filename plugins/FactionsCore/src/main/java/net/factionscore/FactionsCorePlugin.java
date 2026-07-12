@@ -61,6 +61,7 @@ public final class FactionsCorePlugin extends PluginBase {
     public void onEnable() {
         saveDefaultConfig();
         checkRedstoneSettings();
+        enforceExplosionGameRules();
 
         try {
             database = new Database(getDataFolder(), getConfig().getString("storage.file", "factionscore.db"));
@@ -171,6 +172,9 @@ public final class FactionsCorePlugin extends PluginBase {
         getServer().getCommandMap().register("factionscore", new net.factionscore.economy.BalTopCommand(economyManager));
         getServer().getCommandMap().register("factionscore", new net.factionscore.misc.WildCommand(factionManager, worldBorderManager, warmupManager, getConfig()));
         getServer().getCommandMap().register("factionscore", new net.factionscore.misc.SpawnCommand(warmupManager));
+        net.factionscore.misc.TntTestCommand tntTest = new net.factionscore.misc.TntTestCommand();
+        getServer().getCommandMap().register("factionscore", tntTest);
+        getServer().getPluginManager().registerEvents(tntTest, this);
 
         net.factionscore.kit.KitManager kitManager = new net.factionscore.kit.KitManager(database, getConfig());
         getServer().getCommandMap().register("factionscore", new net.factionscore.kit.KitCommand(kitManager));
@@ -240,6 +244,27 @@ public final class FactionsCorePlugin extends PluginBase {
             getLogger().warning(org.powernukkitx.utils.TextFormat.RED
                     + "gameplay-settings.tick-redstone is FALSE -- redstone components are frozen and will "
                     + "not respond to signal changes.");
+        }
+    }
+
+    /**
+     * TNT raiding and creeper block damage die silently when the tntExplodes/mobGriefing game
+     * rules are off -- and an opped Bedrock client can flip those from its world-settings screen
+     * without anyone noticing (the explosion still booms, it just breaks no blocks). Both rules
+     * are core to factions, so force them back on at every startup unless the owner opts out.
+     */
+    private void enforceExplosionGameRules() {
+        if (!getConfig().getBoolean("combat.force-explosion-gamerules", true)) return;
+        for (var level : getServer().getLevels().values()) {
+            var rules = level.getGameRules();
+            if (!rules.getBoolean(org.powernukkitx.level.GameRule.TNT_EXPLODES)) {
+                rules.setGameRule(org.powernukkitx.level.GameRule.TNT_EXPLODES, true);
+                getLogger().warning("Game rule tntExplodes was OFF in level '" + level.getName() + "' -- re-enabled it (TNT must break blocks on a factions server).");
+            }
+            if (!rules.getBoolean(org.powernukkitx.level.GameRule.MOB_GRIEFING)) {
+                rules.setGameRule(org.powernukkitx.level.GameRule.MOB_GRIEFING, true);
+                getLogger().warning("Game rule mobGriefing was OFF in level '" + level.getName() + "' -- re-enabled it (creeper explosions must break blocks).");
+            }
         }
     }
 
