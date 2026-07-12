@@ -17,6 +17,13 @@ public final class Database {
     private final Connection connection;
 
     public Database(File dataFolder, String fileName) throws SQLException {
+        // DriverManager's service discovery doesn't reliably see drivers loaded by a plugin
+        // classloader; loading the class explicitly forces its self-registration.
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("SQLite driver not found on plugin classpath", e);
+        }
         if (!dataFolder.exists() && !dataFolder.mkdirs()) {
             throw new IllegalStateException("Could not create data folder " + dataFolder);
         }

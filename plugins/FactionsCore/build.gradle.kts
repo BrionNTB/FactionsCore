@@ -40,7 +40,11 @@ tasks.shadowJar {
     relocate("okhttp3", "net.factionscore.libs.okhttp3")
     relocate("okio", "net.factionscore.libs.okio")
     relocate("com.google.gson", "net.factionscore.libs.gson")
-    relocate("org.sqlite", "net.factionscore.libs.sqlite")
+    // org.sqlite is deliberately NOT relocated: sqlite-jdbc registers itself with JDBC's
+    // DriverManager via a service file and extracts a native library from a hardcoded
+    // org/sqlite/native resource path, both of which break under relocation ("No suitable
+    // driver found for jdbc:sqlite:..."). Nothing else on the server bundles sqlite, so
+    // there's no conflict to guard against.
 }
 
 tasks.build {

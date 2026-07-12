@@ -26,6 +26,15 @@ plugins {
 group = "org.powernukkitx"
 version = providers.gradleProperty("buildVersion").orElse("nightly-SNAPSHOT").get()
 description = "powernukkitx"
+
+// Upstream assumes this project is the git repo root; vendored inside FactionsCore the .git
+// directory lives two levels up, and on a source-only export it may not exist at all. Point the
+// plugin at the actual repo and don't fail packaging over missing git metadata (it only feeds
+// the version string shown in logs/queries).
+gitProperties {
+    dotGitDirectory.set(rootProject.layout.projectDirectory.dir("../../.git"))
+    failOnNoGitDirectory = false
+}
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
 
