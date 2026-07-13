@@ -41,6 +41,17 @@ public final class ObsidianBreakListener implements Listener {
         if (level == null) return;
         Vector3 center = event.getPosition();
 
+        // Water-muffled explosions don't wear obsidian: cannon charges detonate inside their
+        // water chamber, and without this every shot chewed through the cannon's own walls
+        // (5 hits = break -- "first shot fine, second shot the cannon eats itself"). Raiding is
+        // unaffected: TNT fired at a base detonates dry.
+        Vector3 blockPos = new Vector3(center.getFloorX(), center.getFloorY(), center.getFloorZ());
+        Block at0 = level.getBlock(blockPos, 0);
+        Block at1 = level.getBlock(blockPos, 1);
+        if (at0.getId().contains("water") || at1.getId().contains("water")) {
+            return;
+        }
+
         int cx = center.getFloorX();
         int cy = center.getFloorY();
         int cz = center.getFloorZ();
