@@ -54,7 +54,9 @@ public final class TntTestCommand extends Command implements Listener {
             return streamTest(sender, level, pos);
         }
         if (args.length > 0 && args[0].equalsIgnoreCase("box")) {
-            return boxTest(sender, level, pos, args.length > 1 ? Integer.parseInt(args[1]) : 6);
+            return boxTest(sender, level, pos,
+                    args.length > 1 ? Integer.parseInt(args[1]) : 6,
+                    args.length > 2 ? Integer.parseInt(args[2]) : 2);
         }
 
         sender.sendMessage(TextFormat.YELLOW + "[tnttest] gamerule tntExplodes = "
@@ -198,29 +200,32 @@ public final class TntTestCommand extends Command implements Listener {
      * staggered detonation pattern a multi-charge cannon produces. If the first blast throws the
      * second charge out of the water, its dry explosion is what eats cannons.
      */
-    private boolean boxTest(CommandSender sender, Level level, Vector3 posIn, int fuseGap) {
+    private boolean boxTest(CommandSender sender, Level level, Vector3 posIn, int fuseGap, int count) {
         Vector3 base = new Vector3(posIn.getFloorX() + 4, 150, posIn.getFloorZ() + 4);
         org.powernukkitx.block.Block cobble = org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.COBBLESTONE);
-        // 3x3 footprint of cobble, 3 high, with a 1x1 water hole in the middle (open top).
+        // 3x3 footprint of cobble with a 1x1 water hole in the middle, two water sources deep --
+        // the classic Java charge chamber; shallow 1-deep water lets juggled charges escape.
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
-                for (int dy = -1; dy <= 1; dy++) {
+                for (int dy = -2; dy <= 1; dy++) {
                     Vector3 p = base.add(dx, dy, dz);
-                    if (dx == 0 && dz == 0 && dy >= 0) continue;
+                    if (dx == 0 && dz == 0 && dy >= -1) continue;
                     level.setBlock(p, cobble.clone(), false, false);
                 }
             }
         }
         org.powernukkitx.block.Block water = org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.WATER);
-        level.setBlock(base, water, false, false);
+        level.setBlock(base.add(0, -1, 0), water.clone(), false, false);
+        level.setBlock(base, water.clone(), false, false);
 
         armedUntil = System.currentTimeMillis() + 15000;
         pending = sender;
         Vector3 drop = base.add(0.5, 1.2, 0.5);
-        spawnTntEntity(level, drop, 30);
-        spawnTntEntity(level, drop, 30 + fuseGap);
+        for (int i = 0; i < count; i++) {
+            spawnTntEntity(level, drop, 30 + i * fuseGap);
+        }
         sender.sendMessage(TextFormat.YELLOW + "[tnttest] cobble water-box built at " + base.getFloorX() + ",150,"
-                + base.getFloorZ() + "; two TNT dropped in, fuses 30 and " + (30 + fuseGap)
+                + base.getFloorZ() + "; " + count + " TNT dropped in, fuse gap " + fuseGap
                 + " ticks. Watch the reports:");
         return true;
     }
