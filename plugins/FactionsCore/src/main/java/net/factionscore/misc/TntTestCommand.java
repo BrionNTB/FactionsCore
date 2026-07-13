@@ -53,6 +53,9 @@ public final class TntTestCommand extends Command implements Listener {
         if (args.length > 0 && args[0].equalsIgnoreCase("stream")) {
             return streamTest(sender, level, pos);
         }
+        if (args.length > 0 && args[0].equalsIgnoreCase("shot")) {
+            return shotTest(sender, level, pos, args.length > 1 ? Integer.parseInt(args[1]) : 1);
+        }
         if (args.length > 0 && args[0].equalsIgnoreCase("box")) {
             return boxTest(sender, level, pos,
                     args.length > 1 ? Integer.parseInt(args[1]) : 6,
@@ -191,6 +194,56 @@ public final class TntTestCommand extends Command implements Listener {
                 }
             }, 100);
         }, 80);
+        return true;
+    }
+
+    /**
+     * Full water-cannon shot probe: obsidian barrel with a 7-cell stream flowing +X, a charge TNT
+     * dropped in the water upstream (it rides the current toward the muzzle while its fuse burns)
+     * and a dry projectile TNT on the muzzle pad. Reports where the charge actually detonates,
+     * where the projectile is at that moment, and where the projectile lands -- run it a few
+     * times to see shot-to-shot variance.
+     */
+    private boolean shotTest(CommandSender sender, Level level, Vector3 posIn, int charges) {
+        final Vector3 base = new Vector3(posIn.getFloorX() + 4, 150, posIn.getFloorZ());
+        org.powernukkitx.block.Block obsidian = org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.OBSIDIAN);
+        for (int dx = -1; dx <= 12; dx++) {
+            level.setBlock(new Vector3(base.x + dx, 149, base.z), obsidian.clone(), false, false);
+            level.setBlock(new Vector3(base.x + dx, 150, base.z - 1), obsidian.clone(), false, false);
+            level.setBlock(new Vector3(base.x + dx, 150, base.z + 1), obsidian.clone(), false, false);
+            if (dx == -1) {
+                level.setBlock(new Vector3(base.x + dx, 150, base.z), obsidian.clone(), false, false);
+            } else {
+                level.setBlock(new Vector3(base.x + dx, 150, base.z), org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.AIR), false, false);
+            }
+        }
+        for (int dx = 0; dx <= 6; dx++) {
+            org.powernukkitx.block.Block water = org.powernukkitx.block.Block.get(
+                    dx == 0 ? org.powernukkitx.block.BlockID.WATER : org.powernukkitx.block.BlockID.FLOWING_WATER);
+            water.setPropertyValue(org.powernukkitx.block.property.CommonBlockProperties.LIQUID_DEPTH, dx);
+            level.setBlock(new Vector3(base.x + dx, 150, base.z), water, false, false);
+        }
+        armedUntil = System.currentTimeMillis() + 15000;
+        pending = sender;
+        for (int i = 0; i < charges; i++) {
+            spawnTntEntity(level, base.add(4.5, 1.2, 0.5), 60);
+        }
+        Vector3 projectileStart = base.add(8.5, 1.1, 0.5);
+        CompoundTag nbt = Entity.getDefaultNBT(projectileStart).putByte("Fuse", (byte) 100);
+        Entity projectile = Entity.createEntity(EntityID.TNT, level.getChunk(projectileStart.getChunkX(), projectileStart.getChunkZ(), true), nbt);
+        if (projectile == null) {
+            sender.sendMessage(TextFormat.RED + "[tnttest] could not spawn projectile");
+            return true;
+        }
+        projectile.spawnToAll();
+        sender.sendMessage(TextFormat.YELLOW + "[tnttest] shot rig at " + base.getFloorX() + ",150," + base.getFloorZ()
+                + ": water cells x+0..x+6, " + charges + " charge(s) dropped at x+4.5, projectile dry at x+8.5. Charge pops in 3s:");
+        Server.getInstance().getScheduler().scheduleDelayedTask(plugin, () -> {
+            if (!projectile.isClosed()) {
+                sender.sendMessage(TextFormat.AQUA + String.format("[tnttest] t+65: projectile at %.2f,%.2f,%.2f motion %.2f,%.2f,%.2f",
+                        projectile.x, projectile.y, projectile.z, projectile.motionX, projectile.motionY, projectile.motionZ));
+            }
+        }, 65);
         return true;
     }
 
