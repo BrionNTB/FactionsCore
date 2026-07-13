@@ -39,13 +39,22 @@ public final class SchemCommand extends Command {
             }
             case "paste" -> {
                 if (args.length < 2) {
-                    sender.sendMessage(TextFormat.RED + "Usage: /schem paste <name>");
+                    sender.sendMessage(TextFormat.RED + "Usage: /schem paste <name> [material]");
                     return true;
                 }
                 McStructure structure = schematics.get(args[1]);
                 if (structure == null) {
                     sender.sendMessage(TextFormat.RED + "Unknown schematic. See /schem list");
                     return true;
+                }
+                org.powernukkitx.block.Block frameMaterial = null;
+                if (args.length > 2) {
+                    String id = args[2].contains(":") ? args[2] : "minecraft:" + args[2].toLowerCase();
+                    frameMaterial = org.powernukkitx.registry.Registries.BLOCK.get(id);
+                    if (frameMaterial == null) {
+                        sender.sendMessage(TextFormat.RED + "Unknown block '" + args[2] + "' -- try cobblestone, obsidian, bedrock...");
+                        return true;
+                    }
                 }
                 Level level;
                 Vector3 corner;
@@ -63,8 +72,10 @@ public final class SchemCommand extends Command {
                     level = Server.getInstance().getDefaultLevel();
                     corner = level.getSafeSpawn().add(2, 0, 2);
                 }
-                int placed = schematics.paste(structure, level, corner, true);
-                sender.sendMessage(TextFormat.GREEN + "Pasted " + args[1] + TextFormat.GRAY + " (" + placed
+                int placed = schematics.paste(structure, level, corner, true, frameMaterial);
+                sender.sendMessage(TextFormat.GREEN + "Pasted " + args[1]
+                        + (frameMaterial != null ? " in " + frameMaterial.getId().replace("minecraft:", "") : "")
+                        + TextFormat.GRAY + " (" + placed
                         + " blocks, corner " + corner.getFloorX() + "," + corner.getFloorY() + "," + corner.getFloorZ()
                         + ", laid out toward east/south as saved)." + TextFormat.GREEN + " Dispensers come pre-loaded with TNT.");
                 if (!structure.unresolvedBlocks().isEmpty()) {

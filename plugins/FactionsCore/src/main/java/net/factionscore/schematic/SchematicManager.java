@@ -28,7 +28,8 @@ public final class SchematicManager {
 
     public SchematicManager(PluginBase plugin) {
         this.plugin = plugin;
-        for (String bundled : new String[]{"schematics/stacker20.mcstructure", "schematics/testcannon.mcstructure"}) {
+        for (String bundled : new String[]{"schematics/stacker20.mcstructure", "schematics/testcannon.mcstructure",
+                "schematics/heavycannon.mcstructure"}) {
             plugin.saveResource(bundled);
         }
         reload();
@@ -64,15 +65,22 @@ public final class SchematicManager {
         return schematics.get(name);
     }
 
+    /** Structural materials that {@code /schem paste <name> <material>} swaps for the requested block. */
+    private static final java.util.Set<String> FRAME_MATERIALS = java.util.Set.of(
+            BlockID.BEDROCK, BlockID.OBSIDIAN, BlockID.COBBLESTONE);
+
     /**
      * Pastes the structure with its minimum corner at {@code corner}, in the orientation it was
      * saved in (+X east, +Z south). Bottom-up so nothing pops off missing supports, no block
      * updates during the paste so the redstone lands in its saved resting state, and every
      * dispenser is topped up with TNT so a pasted cannon is ready to fire.
      *
+     * @param frameMaterial optional block to substitute for the structure's frame blocks
+     *                      (bedrock/obsidian/cobblestone), so a cannon can be tested in the
+     *                      material players will actually build with; null = paste as saved
      * @return number of blocks placed
      */
-    public int paste(McStructure structure, Level level, Vector3 corner, boolean fillDispensers) {
+    public int paste(McStructure structure, Level level, Vector3 corner, boolean fillDispensers, Block frameMaterial) {
         int placed = 0;
         int baseX = corner.getFloorX();
         int baseY = corner.getFloorY();
@@ -83,6 +91,9 @@ public final class SchematicManager {
                     Block block = structure.blockAt(x, y, z);
                     if (block == null) {
                         continue;
+                    }
+                    if (frameMaterial != null && FRAME_MATERIALS.contains(block.getId())) {
+                        block = frameMaterial;
                     }
                     Vector3 pos = new Vector3(baseX + x, baseY + y, baseZ + z);
                     level.setBlock(pos, block.clone(), false, false);
