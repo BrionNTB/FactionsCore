@@ -90,3 +90,6 @@ permissions:
   factionscore.command.spawn:
     description: Teleport to spawn
     default: true
+  factionscore.command.schem:
+    description: Paste saved .mcstructure schematics
+    default: op

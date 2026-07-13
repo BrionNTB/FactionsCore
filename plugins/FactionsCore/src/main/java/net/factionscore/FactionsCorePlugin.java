@@ -176,6 +176,10 @@ public final class FactionsCorePlugin extends PluginBase {
         getServer().getCommandMap().register("factionscore", tntTest);
         getServer().getPluginManager().registerEvents(tntTest, this);
 
+        // .mcstructure paste system: spawn pre-built cannons instead of rebuilding after each test.
+        net.factionscore.schematic.SchematicManager schematicManager = new net.factionscore.schematic.SchematicManager(this);
+        getServer().getCommandMap().register("factionscore", new net.factionscore.schematic.SchemCommand(schematicManager));
+
         net.factionscore.kit.KitManager kitManager = new net.factionscore.kit.KitManager(database, getConfig());
         getServer().getCommandMap().register("factionscore", new net.factionscore.kit.KitCommand(kitManager));
 
