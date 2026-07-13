@@ -53,6 +53,56 @@ public final class TntTestCommand extends Command implements Listener {
         if (args.length > 0 && args[0].equalsIgnoreCase("stream")) {
             return streamTest(sender, level, pos);
         }
+        if (args.length > 0 && args[0].equalsIgnoreCase("arm")) {
+            int seconds = args.length > 1 ? Integer.parseInt(args[1]) : 30;
+            armedUntil = System.currentTimeMillis() + seconds * 1000L;
+            pending = sender;
+            // Dummy chunk loader so redstone/liquids around here tick even with no player nearby
+            // (scheduled block updates only run in chunks near a loader) -- lets the console fire
+            // pasted cannons. Unregisters itself when the window closes.
+            final Vector3 armPos = pos;
+            final Level armLevel = level;
+            org.powernukkitx.level.ChunkLoader loader = new org.powernukkitx.level.ChunkLoader() {
+                public int getLoaderId() {
+                    return Integer.MAX_VALUE - 17;
+                }
+                public boolean isLoaderActive() {
+                    return true;
+                }
+                public org.powernukkitx.level.Position getPosition() {
+                    return org.powernukkitx.level.Position.fromObject(armPos, armLevel);
+                }
+                public double getX() {
+                    return armPos.x;
+                }
+                public double getZ() {
+                    return armPos.z;
+                }
+                public Level getLevel() {
+                    return armLevel;
+                }
+                public void onChunkChanged(org.powernukkitx.level.format.IChunk chunk) {
+                }
+                public void onChunkLoaded(org.powernukkitx.level.format.IChunk chunk) {
+                }
+                public void onChunkUnloaded(org.powernukkitx.level.format.IChunk chunk) {
+                }
+            };
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    level.registerChunkLoader(loader, (pos.getFloorX() >> 4) + dx, (pos.getFloorZ() >> 4) + dz, true);
+                }
+            }
+            Server.getInstance().getScheduler().scheduleDelayedTask(plugin, () -> {
+                for (int dx = -2; dx <= 2; dx++) {
+                    for (int dz = -2; dz <= 2; dz++) {
+                        armLevel.unregisterChunkLoader(loader, (armPos.getFloorX() >> 4) + dx, (armPos.getFloorZ() >> 4) + dz);
+                    }
+                }
+            }, seconds * 20);
+            sender.sendMessage(TextFormat.YELLOW + "[tnttest] armed for " + seconds + "s: explosions will be reported, chunks here are ticking.");
+            return true;
+        }
         if (args.length > 0 && args[0].equalsIgnoreCase("shot")) {
             return shotTest(sender, level, pos, args.length > 1 ? Integer.parseInt(args[1]) : 1);
         }

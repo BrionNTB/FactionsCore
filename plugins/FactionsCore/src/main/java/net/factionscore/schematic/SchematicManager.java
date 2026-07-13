@@ -28,7 +28,7 @@ public final class SchematicManager {
 
     public SchematicManager(PluginBase plugin) {
         this.plugin = plugin;
-        for (String bundled : new String[]{"schematics/stacker20.mcstructure"}) {
+        for (String bundled : new String[]{"schematics/stacker20.mcstructure", "schematics/testcannon.mcstructure"}) {
             plugin.saveResource(bundled);
         }
         reload();
