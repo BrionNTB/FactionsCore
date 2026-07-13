@@ -50,6 +50,9 @@ public final class TntTestCommand extends Command implements Listener {
         if (args.length > 0 && args[0].equalsIgnoreCase("cannon")) {
             return cannonTest(sender, level, pos);
         }
+        if (args.length > 0 && args[0].equalsIgnoreCase("stream")) {
+            return streamTest(sender, level, pos);
+        }
 
         sender.sendMessage(TextFormat.YELLOW + "[tnttest] gamerule tntExplodes = "
                 + level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)
@@ -113,6 +116,74 @@ public final class TntTestCommand extends Command implements Listener {
             } else {
                 sender.sendMessage(TextFormat.GREEN + String.format("[tnttest] blast launched the projectile %.1f blocks -- cannon physics working.", travelled));
             }
+        }, 80);
+        return true;
+    }
+
+    /**
+     * Water-carry probe: builds an enclosed obsidian channel in the sky, pours a water source in
+     * at one end, drops a long-fused TNT into the stream, and reports how far the current carried
+     * it. Cannon barrels feed their charge down exactly this kind of stream, so "drifted 0.0
+     * blocks" means water currents aren't moving primed TNT and cannons cannot feed.
+     */
+    private boolean streamTest(CommandSender sender, Level level, Vector3 posIn) {
+        final Vector3 base = sender instanceof Player
+                ? new Vector3(posIn.getFloorX(), 150, posIn.getFloorZ())
+                : new Vector3(posIn.getFloorX(), 150, posIn.getFloorZ());
+        org.powernukkitx.block.Block obsidian = org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.OBSIDIAN);
+        for (int dx = -1; dx <= 9; dx++) {
+            level.setBlock(new Vector3(base.x + dx, 149, base.z), obsidian);          // floor
+            level.setBlock(new Vector3(base.x + dx, 150, base.z - 1), obsidian);      // wall
+            level.setBlock(new Vector3(base.x + dx, 150, base.z + 1), obsidian);      // wall
+            if (dx == -1 || dx == 9) {
+                level.setBlock(new Vector3(base.x + dx, 150, base.z), obsidian);      // end caps
+            } else {
+                level.setBlock(new Vector3(base.x + dx, 150, base.z), org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.AIR));
+            }
+        }
+        // Hand-author the steady-state stream (source at depth 0, rising 1 per block downstream)
+        // instead of waiting for natural spread: scheduled block updates only run in chunks near
+        // players, so a console-run probe would otherwise sit next to an inert source forever.
+        // The flow vectors are computed from these depth differences, same as a live stream.
+        for (int dx = 0; dx <= 7; dx++) {
+            org.powernukkitx.block.Block water = org.powernukkitx.block.Block.get(
+                    dx == 0 ? org.powernukkitx.block.BlockID.WATER : org.powernukkitx.block.BlockID.FLOWING_WATER);
+            water.setPropertyValue(org.powernukkitx.block.property.CommonBlockProperties.LIQUID_DEPTH, dx);
+            level.setBlock(new Vector3(base.x + dx, 150, base.z), water, false, false);
+        }
+        sender.sendMessage(TextFormat.YELLOW + "[tnttest] stream built at " + base.getFloorX() + ",150," + base.getFloorZ()
+                + " flowing +X -- dropping TNT in...");
+        Server.getInstance().getScheduler().scheduleDelayedTask(plugin, () -> {
+            Vector3 start = new Vector3(base.x + 1.5, 150.2, base.z + 0.5);
+            // Fuse is stored as a byte, so 127 is the ceiling; 120 outlives the 100-tick measurement.
+            CompoundTag nbt = Entity.getDefaultNBT(start).putByte("Fuse", (byte) 120);
+            Entity tnt = Entity.createEntity(EntityID.TNT, level.getChunk(start.getChunkX(), start.getChunkZ(), true), nbt);
+            if (tnt == null) {
+                sender.sendMessage(TextFormat.RED + "[tnttest] could not spawn the TNT entity!");
+                return;
+            }
+            tnt.spawnToAll();
+            Server.getInstance().getScheduler().scheduleDelayedTask(plugin, () -> {
+                if (tnt.isClosed()) {
+                    sender.sendMessage(TextFormat.RED + "[tnttest] stream TNT vanished before it could be measured.");
+                    return;
+                }
+                double drifted = tnt.x - start.x;
+                StringBuilder cells = new StringBuilder();
+                for (int dx = 0; dx <= 5; dx++) {
+                    cells.append(dx).append('=')
+                            .append(level.getBlock(new Vector3(base.x + dx, 150, base.z)).getId().replace("minecraft:", ""))
+                            .append(' ');
+                }
+                sender.sendMessage(TextFormat.GRAY + "[tnttest] tnt at " + String.format("%.2f,%.2f,%.2f", tnt.x, tnt.y, tnt.z)
+                        + " channel: " + cells);
+                tnt.close();
+                if (drifted < 1.0) {
+                    sender.sendMessage(TextFormat.RED + String.format("[tnttest] stream only carried the TNT %.2f blocks -- water push is broken.", drifted));
+                } else {
+                    sender.sendMessage(TextFormat.GREEN + String.format("[tnttest] stream carried the TNT %.1f blocks downstream -- cannon feeding works.", drifted));
+                }
+            }, 100);
         }, 80);
         return true;
     }

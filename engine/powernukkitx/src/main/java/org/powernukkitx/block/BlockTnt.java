@@ -82,16 +82,18 @@ public class BlockTnt extends BlockSolid implements RedstoneComponent, Natural {
 
     public void prime(int fuse, Entity source) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-        double mot = (new NukkitRandom()).nextFloat() * Math.PI * 2;
+        // Fork change: no random horizontal jitter on prime (vanilla nudges the entity up to half
+        // a block sideways over the fuse). Factions cannons need the charge to drop dead straight
+        // into a one-block water trench, so primed TNT only gets the vanilla vertical hop.
         CompoundTag nbt = new CompoundTag()
                 .putList("Pos", new ListTag<DoubleTag>()
                         .add(new DoubleTag(this.x + 0.5))
                         .add(new DoubleTag(this.y))
                         .add(new DoubleTag(this.z + 0.5)))
                 .putList("Motion", new ListTag<DoubleTag>()
-                        .add(new DoubleTag(-Math.sin(mot) * 0.02))
+                        .add(new DoubleTag(0))
                         .add(new DoubleTag(0.2))
-                        .add(new DoubleTag(-Math.cos(mot) * 0.02)))
+                        .add(new DoubleTag(0)))
                 .putList("Rotation", new ListTag<FloatTag>()
                         .add(new FloatTag(0f))
                         .add(new FloatTag(0f)))

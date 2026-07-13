@@ -140,6 +140,8 @@ public class EntityTnt extends Entity implements EntityExplosive {
 
             motionY -= getGravity();
 
+            applyWaterCurrent();
+
             move(motionX, motionY, motionZ);
 
             float friction = 1 - getDrag();
@@ -168,6 +170,35 @@ public class EntityTnt extends Entity implements EntityExplosive {
         }
 
         return hasUpdate || fuse >= 0 || Math.abs(motionX) > 0.00001 || Math.abs(motionY) > 0.00001 || Math.abs(motionZ) > 0.00001;
+    }
+
+    /**
+     * Java 1.8.8 parity (fork fix): primed TNT is carried by flowing water -- cannon barrels feed
+     * the charge down a water stream. This entity doesn't extend EntityPhysical (which has liquid
+     * handling), so without this it ignored currents entirely and cannons couldn't feed. Matches
+     * vanilla's handleMaterialAcceleration: sum the flow vectors of water blocks intersecting the
+     * hitbox, normalize, accelerate 0.014 blocks/tick along the flow.
+     */
+    private void applyWaterCurrent() {
+        org.powernukkitx.math.Vector3 flow = new org.powernukkitx.math.Vector3();
+        boolean inWater = false;
+        for (org.powernukkitx.block.Block each : this.level.getCollisionBlocks(this.boundingBox, false, true,
+                block -> block instanceof org.powernukkitx.block.BlockLiquid && block.getId().contains("water"))) {
+            org.powernukkitx.math.Vector3 vector = ((org.powernukkitx.block.BlockLiquid) each).getFlowVector();
+            flow.x += vector.x;
+            flow.y += vector.y;
+            flow.z += vector.z;
+            inWater = true;
+        }
+        if (!inWater) {
+            return;
+        }
+        double length = flow.length();
+        if (length > 0) {
+            this.motionX += flow.x / length * 0.014;
+            this.motionY += flow.y / length * 0.014;
+            this.motionZ += flow.z / length * 0.014;
+        }
     }
 
     @Override
