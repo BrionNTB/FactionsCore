@@ -103,6 +103,9 @@ public final class TntTestCommand extends Command implements Listener {
             sender.sendMessage(TextFormat.YELLOW + "[tnttest] armed for " + seconds + "s: explosions will be reported, chunks here are ticking.");
             return true;
         }
+        if (args.length > 0 && args[0].equalsIgnoreCase("sandshot")) {
+            return sandShotTest(sender, level, pos);
+        }
         if (args.length > 0 && args[0].equalsIgnoreCase("shot")) {
             return shotTest(sender, level, pos, args.length > 1 ? Integer.parseInt(args[1]) : 1);
         }
@@ -244,6 +247,51 @@ public final class TntTestCommand extends Command implements Listener {
                 }
             }, 100);
         }, 80);
+        return true;
+    }
+
+    /**
+     * Sand-cannon physics probe: detonates a charge next to a mid-air falling sand entity (the
+     * moment a sand cannon dislodges its payload) and reports how far the blast threw it. Sand
+     * cannons are dead on arrival if this reports ~0.
+     */
+    private boolean sandShotTest(CommandSender sender, Level level, Vector3 posIn) {
+        final Vector3 base = sender instanceof Player
+                ? new Vector3(posIn.getFloorX() + 0.5, posIn.y, posIn.getFloorZ() + 0.5)
+                : new Vector3(posIn.getFloorX() + 0.5, 150, posIn.getFloorZ() + 0.5);
+        org.powernukkitx.block.Block obsidian = org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.OBSIDIAN);
+        for (int dx = -3; dx <= 6; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                level.setBlock(new Vector3(base.getFloorX() + dx, base.getFloorY() - 1, base.getFloorZ() + dz), obsidian.clone(), false, false);
+            }
+        }
+        armedUntil = System.currentTimeMillis() + 15000;
+        pending = sender;
+        spawnTntEntity(level, base.add(0, 0.1, 0), 20);
+        sender.sendMessage(TextFormat.YELLOW + "[tnttest] sand probe armed at " + base.getFloorX() + "," + base.getFloorY() + "," + base.getFloorZ());
+        Server.getInstance().getScheduler().scheduleDelayedTask(plugin, () -> {
+            Vector3 sandStart = base.add(1.2, 1.0, 0);
+            CompoundTag nbt = Entity.getDefaultNBT(sandStart)
+                    .putCompound("Block", new CompoundTag()
+                            .putString("name", "minecraft:sand")
+                            .putCompound("states", new CompoundTag()));
+            Entity sand = Entity.createEntity(EntityID.FALLING_BLOCK, level.getChunk(sandStart.getChunkX(), sandStart.getChunkZ(), true), nbt);
+            if (sand == null) {
+                sender.sendMessage(TextFormat.RED + "[tnttest] could not spawn falling sand entity!");
+                return;
+            }
+            sand.spawnToAll();
+            Server.getInstance().getScheduler().scheduleDelayedTask(plugin, () -> {
+                if (sand.isClosed()) {
+                    sender.sendMessage(TextFormat.YELLOW + "[tnttest] sand entity landed/converted -- it settled somewhere. Last known handling done.");
+                } else {
+                    double travelled = Math.sqrt(Math.pow(sand.x - sandStart.x, 2) + Math.pow(sand.z - sandStart.z, 2));
+                    sender.sendMessage((travelled < 0.5 ? TextFormat.RED : TextFormat.GREEN)
+                            + String.format("[tnttest] blast threw the falling sand %.1f blocks (at %.1f,%.1f,%.1f) -- sand cannons %s.",
+                            travelled, sand.x, sand.y, sand.z, travelled < 0.5 ? "will NOT work yet" : "are viable"));
+                }
+            }, 40);
+        }, 18);
         return true;
     }
 
