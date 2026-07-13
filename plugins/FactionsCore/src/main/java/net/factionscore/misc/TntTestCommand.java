@@ -53,6 +53,9 @@ public final class TntTestCommand extends Command implements Listener {
         if (args.length > 0 && args[0].equalsIgnoreCase("stream")) {
             return streamTest(sender, level, pos);
         }
+        if (args.length > 0 && args[0].equalsIgnoreCase("box")) {
+            return boxTest(sender, level, pos, args.length > 1 ? Integer.parseInt(args[1]) : 6);
+        }
 
         sender.sendMessage(TextFormat.YELLOW + "[tnttest] gamerule tntExplodes = "
                 + level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)
@@ -71,6 +74,7 @@ public final class TntTestCommand extends Command implements Listener {
             return true;
         }
         pending = sender;
+        armedUntil = System.currentTimeMillis() + 8000;
         tnt.spawnToAll();
         sender.sendMessage(TextFormat.YELLOW + "[tnttest] TNT spawned at your feet -- step back! Exploding in 2 seconds...");
         return true;
@@ -188,22 +192,67 @@ public final class TntTestCommand extends Command implements Listener {
         return true;
     }
 
+    /**
+     * Cannon-implosion probe: cobblestone box with a single water source hole (the classic wet
+     * charge chamber), then two TNT dropped into the water with fuses a few ticks apart -- the
+     * staggered detonation pattern a multi-charge cannon produces. If the first blast throws the
+     * second charge out of the water, its dry explosion is what eats cannons.
+     */
+    private boolean boxTest(CommandSender sender, Level level, Vector3 posIn, int fuseGap) {
+        Vector3 base = new Vector3(posIn.getFloorX() + 4, 150, posIn.getFloorZ() + 4);
+        org.powernukkitx.block.Block cobble = org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.COBBLESTONE);
+        // 3x3 footprint of cobble, 3 high, with a 1x1 water hole in the middle (open top).
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    Vector3 p = base.add(dx, dy, dz);
+                    if (dx == 0 && dz == 0 && dy >= 0) continue;
+                    level.setBlock(p, cobble.clone(), false, false);
+                }
+            }
+        }
+        org.powernukkitx.block.Block water = org.powernukkitx.block.Block.get(org.powernukkitx.block.BlockID.WATER);
+        level.setBlock(base, water, false, false);
+
+        armedUntil = System.currentTimeMillis() + 15000;
+        pending = sender;
+        Vector3 drop = base.add(0.5, 1.2, 0.5);
+        spawnTntEntity(level, drop, 30);
+        spawnTntEntity(level, drop, 30 + fuseGap);
+        sender.sendMessage(TextFormat.YELLOW + "[tnttest] cobble water-box built at " + base.getFloorX() + ",150,"
+                + base.getFloorZ() + "; two TNT dropped in, fuses 30 and " + (30 + fuseGap)
+                + " ticks. Watch the reports:");
+        return true;
+    }
+
+    private void spawnTntEntity(Level level, Vector3 pos, int fuse) {
+        CompoundTag nbt = Entity.getDefaultNBT(pos).putByte("Fuse", (byte) Math.min(fuse, 127));
+        Entity tnt = Entity.createEntity(EntityID.TNT, level.getChunk(pos.getChunkX(), pos.getChunkZ(), true), nbt);
+        if (tnt != null) {
+            tnt.spawnToAll();
+        }
+    }
+
+    private volatile long armedUntil;
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onExplode(EntityExplodeEvent event) {
         CommandSender sender = pending;
         if (sender == null) return;
-        pending = null;
+        if (System.currentTimeMillis() > armedUntil) {
+            pending = null;
+            return;
+        }
         if (event.isCancelled()) {
             sender.sendMessage(TextFormat.RED + "[tnttest] explosion was CANCELLED by a plugin -- that's the bug.");
             return;
         }
         int count = event.getBlockList().size();
+        String at = String.format("%.2f,%.2f,%.2f", event.getPosition().x, event.getPosition().y, event.getPosition().z);
         if (count == 0) {
-            sender.sendMessage(TextFormat.RED + "[tnttest] explosion happened but hit 0 blocks. If you weren't in "
-                    + "water or mid-air, report this.");
+            sender.sendMessage(TextFormat.GREEN + "[tnttest] explosion at " + at + " destroyed 0 blocks (in water/mid-air = protected).");
         } else {
-            sender.sendMessage(TextFormat.GREEN + "[tnttest] explosion destroyed " + count
-                    + " blocks -- TNT block damage is working here.");
+            sender.sendMessage(TextFormat.RED + "[tnttest] explosion at " + at + " destroyed " + count + " blocks.");
         }
     }
 }
