@@ -29,7 +29,12 @@ public final class SchematicManager {
     public SchematicManager(PluginBase plugin) {
         this.plugin = plugin;
         for (String bundled : new String[]{"schematics/stacker20.mcstructure", "schematics/testcannon.mcstructure",
-                "schematics/heavycannon.mcstructure"}) {
+                "schematics/heavycannon.mcstructure",
+                // Faction Schematic Pack cannons (converted from Java litematics):
+                // ef = Efficient Fusion, ls = Left Shooter, rh = Reverse Hybrid; 80/160/255 stacker sizes
+                "schematics/ef80.mcstructure", "schematics/ef160.mcstructure", "schematics/ef255.mcstructure",
+                "schematics/ls80.mcstructure", "schematics/ls160.mcstructure", "schematics/ls255.mcstructure",
+                "schematics/rh80.mcstructure", "schematics/rh160.mcstructure", "schematics/rh255.mcstructure"}) {
             plugin.saveResource(bundled);
         }
         reload();
