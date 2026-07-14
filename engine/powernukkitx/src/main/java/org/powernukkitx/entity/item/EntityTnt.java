@@ -176,19 +176,33 @@ public class EntityTnt extends Entity implements EntityExplosive {
      * Java 1.8.8 parity (fork fix): primed TNT is carried by flowing water -- cannon barrels feed
      * the charge down a water stream. This entity doesn't extend EntityPhysical (which has liquid
      * handling), so without this it ignored currents entirely and cannons couldn't feed. Matches
-     * vanilla's handleMaterialAcceleration: sum the flow vectors of water blocks intersecting the
-     * hitbox, normalize, accelerate 0.014 blocks/tick along the flow.
+     * vanilla's handleMaterialAcceleration: only water cells the (slightly shrunken) hitbox
+     * genuinely overlaps contribute -- the engine's getCollisionBlocks pads the search box, which
+     * made TNT get dragged by neighboring cells it never touched and ruined cannon geometry
+     * (projectiles resting beside a stream would drift off down it).
      */
     private void applyWaterCurrent() {
+        double minX = this.boundingBox.getMinX() + 0.001;
+        double minY = this.boundingBox.getMinY() + 0.001;
+        double minZ = this.boundingBox.getMinZ() + 0.001;
+        double maxX = this.boundingBox.getMaxX() - 0.001;
+        double maxY = this.boundingBox.getMaxY() - 0.001;
+        double maxZ = this.boundingBox.getMaxZ() - 0.001;
         org.powernukkitx.math.Vector3 flow = new org.powernukkitx.math.Vector3();
         boolean inWater = false;
-        for (org.powernukkitx.block.Block each : this.level.getCollisionBlocks(this.boundingBox, false, true,
-                block -> block instanceof org.powernukkitx.block.BlockLiquid && block.getId().contains("water"))) {
-            org.powernukkitx.math.Vector3 vector = ((org.powernukkitx.block.BlockLiquid) each).getFlowVector();
-            flow.x += vector.x;
-            flow.y += vector.y;
-            flow.z += vector.z;
-            inWater = true;
+        for (int x = org.powernukkitx.math.NukkitMath.floorDouble(minX); x <= org.powernukkitx.math.NukkitMath.floorDouble(maxX); x++) {
+            for (int y = org.powernukkitx.math.NukkitMath.floorDouble(minY); y <= org.powernukkitx.math.NukkitMath.floorDouble(maxY); y++) {
+                for (int z = org.powernukkitx.math.NukkitMath.floorDouble(minZ); z <= org.powernukkitx.math.NukkitMath.floorDouble(maxZ); z++) {
+                    org.powernukkitx.block.Block block = this.level.getBlock(x, y, z);
+                    if (block instanceof org.powernukkitx.block.BlockLiquid liquid && block.getId().contains("water")) {
+                        org.powernukkitx.math.Vector3 vector = liquid.getFlowVector();
+                        flow.x += vector.x;
+                        flow.y += vector.y;
+                        flow.z += vector.z;
+                        inWater = true;
+                    }
+                }
+            }
         }
         if (!inWater) {
             return;
