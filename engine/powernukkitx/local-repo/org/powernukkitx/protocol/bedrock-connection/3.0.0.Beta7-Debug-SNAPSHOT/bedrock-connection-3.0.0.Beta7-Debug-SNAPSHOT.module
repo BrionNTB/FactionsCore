@@ -1,0 +1,126 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.powernukkitx.protocol",
+    "module": "bedrock-connection",
+    "version": "3.0.0.Beta7-Debug-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.10.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.powernukkitx.protocol",
+          "module": "bedrock-codec",
+          "version": {
+            "requires": "3.0.0.Beta7-Debug-SNAPSHOT"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.netty",
+          "module": "netty-transport-raknet",
+          "version": {
+            "requires": "1.0.0.CR3-SNAPSHOT"
+          }
+        },
+        {
+          "group": "io.airlift",
+          "module": "aircompressor",
+          "version": {
+            "requires": "0.27"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "bedrock-connection-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "url": "bedrock-connection-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "size": 75339,
+          "sha512": "ab93a98082d217c28349b660ab13683c2f251c3c878a3a1dc8d2c2882d29c24c37589d9fd527b266e3ce839bcaf7da5c39f900bf9209b43e4d179f9a32f55b99",
+          "sha256": "a723e73d0ea8352e39c09cf4d0c5318ff33c380d326dc2bdc5d0d02a09bea467",
+          "sha1": "f68441d29ae8e49c15bacde5e243477d76974a19",
+          "md5": "f369c354c025b108fd9878aeb382f3a9"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.powernukkitx.protocol",
+          "module": "bedrock-codec",
+          "version": {
+            "requires": "3.0.0.Beta7-Debug-SNAPSHOT"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.netty",
+          "module": "netty-transport-raknet",
+          "version": {
+            "requires": "1.0.0.CR3-SNAPSHOT"
+          }
+        },
+        {
+          "group": "io.airlift",
+          "module": "aircompressor",
+          "version": {
+            "requires": "0.27"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "bedrock-connection-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "url": "bedrock-connection-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "size": 75339,
+          "sha512": "ab93a98082d217c28349b660ab13683c2f251c3c878a3a1dc8d2c2882d29c24c37589d9fd527b266e3ce839bcaf7da5c39f900bf9209b43e4d179f9a32f55b99",
+          "sha256": "a723e73d0ea8352e39c09cf4d0c5318ff33c380d326dc2bdc5d0d02a09bea467",
+          "sha1": "f68441d29ae8e49c15bacde5e243477d76974a19",
+          "md5": "f369c354c025b108fd9878aeb382f3a9"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "bedrock-connection-3.0.0.Beta7-Debug-SNAPSHOT-sources.jar",
+          "url": "bedrock-connection-3.0.0.Beta7-Debug-SNAPSHOT-sources.jar",
+          "size": 37194,
+          "sha512": "98d63f3a58ca7e5e3aceba85f627cd820e3e141e0aa10676185aba928692d7cda88fb30a529cbc1fba7c3d0ea0249aaca56e2832a7acb745637942a97d34f040",
+          "sha256": "0914feb81ad1452bada38b672676efe42b0a89c1ba562be0c717005aa40a4cd6",
+          "sha1": "c54dd8fbc3295f52a59e24575ffa1db031accdf2",
+          "md5": "55007cdbec546585ba3db2d0131b14df"
+        }
+      ]
+    }
+  ]
+}

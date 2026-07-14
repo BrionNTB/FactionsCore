@@ -1,0 +1,188 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.cloudburstmc.netty",
+    "module": "netty-transport-raknet",
+    "version": "1.0.0.CR3-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.2.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "io.netty",
+          "module": "netty-common",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-buffer",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-codec",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-transport",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-transport-native-unix-common",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "net.jodah",
+          "module": "expiringmap",
+          "version": {
+            "requires": "0.5.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT.jar",
+          "url": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT.jar",
+          "size": 145503,
+          "sha512": "e370f375d21b0510dca5d1b4a9e4f820eec582c71a80c74c2b841359831680e7bc968499ee1418676ad3f6157318e0995b478b459f19e1d58e1508d85b81b329",
+          "sha256": "251390de247641c1da4561cc9a39a77e031e7617dd2214fda5e8047cff406c50",
+          "sha1": "586df2f593d939273702c587dccb4b08910e2f8e",
+          "md5": "d4f3e618d4de940cb33f2679a6f113b5"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.netty",
+          "module": "netty-common",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-buffer",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-codec",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-transport",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-transport-native-unix-common",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "net.jodah",
+          "module": "expiringmap",
+          "version": {
+            "requires": "0.5.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT.jar",
+          "url": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT.jar",
+          "size": 145503,
+          "sha512": "e370f375d21b0510dca5d1b4a9e4f820eec582c71a80c74c2b841359831680e7bc968499ee1418676ad3f6157318e0995b478b459f19e1d58e1508d85b81b329",
+          "sha256": "251390de247641c1da4561cc9a39a77e031e7617dd2214fda5e8047cff406c50",
+          "sha1": "586df2f593d939273702c587dccb4b08910e2f8e",
+          "md5": "d4f3e618d4de940cb33f2679a6f113b5"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT-javadoc.jar",
+          "url": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT-javadoc.jar",
+          "size": 281779,
+          "sha512": "734799dda01b8d2b38e0f4bed1a35c4e769d297887aec3937c757ae8f336df4b64cbcc4d4fd8d05b619fe05d3b5ef8c186fe92d6f5e8818ac781bccda5981ff9",
+          "sha256": "ae83874b6fcdd25e05b5c454470bfd18e85eff1d9e2eeebbc6cdddf0349f8551",
+          "sha1": "393c621cefbd8fd51a63479447aab856c2d5fb31",
+          "md5": "ed0696bbc318d24ea48c9299ab2979fb"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT-sources.jar",
+          "url": "netty-transport-raknet-1.0.0.CR3-SNAPSHOT-sources.jar",
+          "size": 104062,
+          "sha512": "b396de0b24adc2fdf3bc6a310c4256dc941163fbe5feffa481b110ce164569e4da88fa59de89038f62c6bccc2f55c6bf14cb3927a5ca22fe97cb60185cd947ee",
+          "sha256": "cf13d41af4e0ecf1728c772d2941fa4caa8317e0387896da0e22462a8f4a4e3b",
+          "sha1": "ec0338dfb86504621a12f8d3943d8ab690263e48",
+          "md5": "ce35ac9052ddac583247bdc85d6f76a6"
+        }
+      ]
+    }
+  ]
+}

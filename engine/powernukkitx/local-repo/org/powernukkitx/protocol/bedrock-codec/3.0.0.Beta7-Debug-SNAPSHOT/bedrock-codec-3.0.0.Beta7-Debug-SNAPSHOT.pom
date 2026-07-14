@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This module was also published with a richer model, Gradle metadata,  -->
+  <!-- which should be used instead. Do not delete the following line which  -->
+  <!-- is to indicate to Gradle or any Gradle module metadata file consumer  -->
+  <!-- that they should prefer consuming it instead. -->
+  <!-- do_not_remove: published-with-gradle-metadata -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.powernukkitx.protocol</groupId>
+  <artifactId>bedrock-codec</artifactId>
+  <version>3.0.0.Beta7-Debug-SNAPSHOT</version>
+  <url>https://github.com/CloudburstMC/Protocol</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>CloudburstMC Team</name>
+      <organization>CloudburstMC</organization>
+      <organizationUrl>https://github.com/CloudburstMC</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/PowerNukkitX/Protocol.git</connection>
+    <developerConnection>scm:git:ssh://github.com/PowerNukkitX/Protocol.git</developerConnection>
+    <url>https://github.com/PowerNukkitX/Protocol</url>
+  </scm>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.cloudburstmc.fastutil</groupId>
+        <artifactId>bom</artifactId>
+        <version>8.5.15</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.powernukkitx.protocol</groupId>
+      <artifactId>common</artifactId>
+      <version>3.0.0.Beta7-Debug-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+      <version>4.1.101.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.cloudburstmc.fastutil.commons</groupId>
+      <artifactId>long-common</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.cloudburstmc.fastutil.maps</groupId>
+      <artifactId>long-object-maps</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bitbucket.b_c</groupId>
+      <artifactId>jose4j</artifactId>
+      <version>0.9.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.cloudburstmc</groupId>
+      <artifactId>nbt</artifactId>
+      <version>3.0.3.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.18.0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>

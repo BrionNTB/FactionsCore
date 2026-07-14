@@ -1,0 +1,183 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.powernukkitx.protocol",
+    "module": "bedrock-codec",
+    "version": "3.0.0.Beta7-Debug-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.10.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.powernukkitx.protocol",
+          "module": "common",
+          "version": {
+            "requires": "3.0.0.Beta7-Debug-SNAPSHOT"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil",
+          "module": "bom",
+          "version": {
+            "requires": "8.5.15"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-buffer",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.commons",
+          "module": "long-common"
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.maps",
+          "module": "long-object-maps"
+        },
+        {
+          "group": "org.bitbucket.b_c",
+          "module": "jose4j",
+          "version": {
+            "requires": "0.9.6"
+          }
+        },
+        {
+          "group": "org.cloudburstmc",
+          "module": "nbt",
+          "version": {
+            "requires": "3.0.3.Final"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "bedrock-codec-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "url": "bedrock-codec-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "size": 2553626,
+          "sha512": "bb2deca54eef35192e2993b865dc7d9316b8c14a7f5842ed8a338bd72e60049a0670768f87cf120218b2e33d8cd199409b5ffcc362be5b989e950f8f2685d451",
+          "sha256": "2af9bed82b28ee8986385aad9daa07736697fae0800279bab45bc6d403345691",
+          "sha1": "277a38818d9143f6bfae2d26838480e1b542df3c",
+          "md5": "d2cea11f8a33d2be93395c84111857d4"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-annotations",
+          "version": {
+            "requires": "2.18.0"
+          }
+        },
+        {
+          "group": "org.powernukkitx.protocol",
+          "module": "common",
+          "version": {
+            "requires": "3.0.0.Beta7-Debug-SNAPSHOT"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil",
+          "module": "bom",
+          "version": {
+            "requires": "8.5.15"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "io.netty",
+          "module": "netty-buffer",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.commons",
+          "module": "long-common"
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.maps",
+          "module": "long-object-maps"
+        },
+        {
+          "group": "org.bitbucket.b_c",
+          "module": "jose4j",
+          "version": {
+            "requires": "0.9.6"
+          }
+        },
+        {
+          "group": "org.cloudburstmc",
+          "module": "nbt",
+          "version": {
+            "requires": "3.0.3.Final"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "bedrock-codec-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "url": "bedrock-codec-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "size": 2553626,
+          "sha512": "bb2deca54eef35192e2993b865dc7d9316b8c14a7f5842ed8a338bd72e60049a0670768f87cf120218b2e33d8cd199409b5ffcc362be5b989e950f8f2685d451",
+          "sha256": "2af9bed82b28ee8986385aad9daa07736697fae0800279bab45bc6d403345691",
+          "sha1": "277a38818d9143f6bfae2d26838480e1b542df3c",
+          "md5": "d2cea11f8a33d2be93395c84111857d4"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "bedrock-codec-3.0.0.Beta7-Debug-SNAPSHOT-sources.jar",
+          "url": "bedrock-codec-3.0.0.Beta7-Debug-SNAPSHOT-sources.jar",
+          "size": 1055312,
+          "sha512": "348d1e7f0906966b305e21bf9ba2a5f56619c8e25c267debc481641954cda59d8183d971a2312051df0c2e25799651e1aa75393c3072af158ebea20f081c1ead",
+          "sha256": "fb063fd3d2c8511ee9e31b8a8756d61ee25fddd2d517a0745a7f989631d17d56",
+          "sha1": "e4e6392c8641c490e646fbc0b91cb1c11cb95572",
+          "md5": "3e7b8033a191646d79e95930928d9e5a"
+        }
+      ]
+    }
+  ]
+}

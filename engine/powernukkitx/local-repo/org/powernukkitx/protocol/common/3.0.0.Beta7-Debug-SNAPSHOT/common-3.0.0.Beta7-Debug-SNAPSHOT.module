@@ -1,0 +1,162 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.powernukkitx.protocol",
+    "module": "common",
+    "version": "3.0.0.Beta7-Debug-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.10.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "io.netty",
+          "module": "netty-buffer",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil",
+          "module": "bom",
+          "version": {
+            "requires": "8.5.15"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.maps",
+          "module": "int-object-maps"
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.maps",
+          "module": "object-int-maps"
+        },
+        {
+          "group": "org.cloudburstmc.math",
+          "module": "immutable",
+          "version": {
+            "requires": "2.0-SNAPSHOT"
+          }
+        },
+        {
+          "group": "com.nukkitx",
+          "module": "natives",
+          "version": {
+            "requires": "1.0.3"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "url": "common-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "size": 43305,
+          "sha512": "ef80368dbad007efad6f87bdc35a58a723541721ed1e31c3cc3131d5c7b388aa57d5239721f508499fc5c7e0d586e63542e0e258e74ab3e3ed96ad86c97db4b3",
+          "sha256": "86b25f1ad4ea3f1062b62fba9f1f9e9e3c4f1c6dd920b9895d4873a4d6c290b5",
+          "sha1": "0d3e833e02a57b1ff2a428ca553fa5a2f67cfa96",
+          "md5": "8203b92eea4dfc32d91f25e3685dbf5a"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.netty",
+          "module": "netty-buffer",
+          "version": {
+            "requires": "4.1.101.Final"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil",
+          "module": "bom",
+          "version": {
+            "requires": "8.5.15"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          }
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.maps",
+          "module": "int-object-maps"
+        },
+        {
+          "group": "org.cloudburstmc.fastutil.maps",
+          "module": "object-int-maps"
+        },
+        {
+          "group": "org.cloudburstmc.math",
+          "module": "immutable",
+          "version": {
+            "requires": "2.0-SNAPSHOT"
+          }
+        },
+        {
+          "group": "com.nukkitx",
+          "module": "natives",
+          "version": {
+            "requires": "1.0.3"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "url": "common-3.0.0.Beta7-Debug-SNAPSHOT.jar",
+          "size": 43305,
+          "sha512": "ef80368dbad007efad6f87bdc35a58a723541721ed1e31c3cc3131d5c7b388aa57d5239721f508499fc5c7e0d586e63542e0e258e74ab3e3ed96ad86c97db4b3",
+          "sha256": "86b25f1ad4ea3f1062b62fba9f1f9e9e3c4f1c6dd920b9895d4873a4d6c290b5",
+          "sha1": "0d3e833e02a57b1ff2a428ca553fa5a2f67cfa96",
+          "md5": "8203b92eea4dfc32d91f25e3685dbf5a"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "common-3.0.0.Beta7-Debug-SNAPSHOT-sources.jar",
+          "url": "common-3.0.0.Beta7-Debug-SNAPSHOT-sources.jar",
+          "size": 26559,
+          "sha512": "3c3853570ab109aed336df71985adb62c754f9ac4bf382f5be724dc7f41fbb764b22e193235411c0ba56993be06864e00b81750b8e4e4b1521d65a2d96e9b295",
+          "sha256": "721134d7a39354f1448c6de8da23247ef220758ff732b273baf4f5097275c0c6",
+          "sha1": "1b6e7c2a74eb4d5f7010bb1f70c1cc0c84b8701b",
+          "md5": "94cd99a482900ce334b93eb7ab9e1306"
+        }
+      ]
+    }
+  ]
+}

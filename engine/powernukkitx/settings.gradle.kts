@@ -16,6 +16,14 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
+        // Vendored copies of every -SNAPSHOT dependency (protocol, raknet, math, libdeflate):
+        // upstream snapshot repos drift and purge old builds, which broke fresh clones with
+        // "cannot find symbol DataStorePropertyValueType". Checked first so these exact,
+        // known-good artifacts always win; everything else still resolves remotely.
+        maven {
+            name = "vendored"
+            url = uri(rootDir.resolve("local-repo"))
+        }
         mavenLocal()
         mavenCentral()
         maven("https://repo.maven.apache.org/maven2/")

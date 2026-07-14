@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- This module was also published with a richer model, Gradle metadata,  -->
+  <!-- which should be used instead. Do not delete the following line which  -->
+  <!-- is to indicate to Gradle or any Gradle module metadata file consumer  -->
+  <!-- that they should prefer consuming it instead. -->
+  <!-- do_not_remove: published-with-gradle-metadata -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.powernukkitx.protocol</groupId>
+  <artifactId>bedrock-connection</artifactId>
+  <version>3.0.0.Beta7-Debug-SNAPSHOT</version>
+  <url>https://github.com/CloudburstMC/Protocol</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>CloudburstMC Team</name>
+      <organization>CloudburstMC</organization>
+      <organizationUrl>https://github.com/CloudburstMC</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/PowerNukkitX/Protocol.git</connection>
+    <developerConnection>scm:git:ssh://github.com/PowerNukkitX/Protocol.git</developerConnection>
+    <url>https://github.com/PowerNukkitX/Protocol</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>org.powernukkitx.protocol</groupId>
+      <artifactId>bedrock-codec</artifactId>
+      <version>3.0.0.Beta7-Debug-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.cloudburstmc.netty</groupId>
+      <artifactId>netty-transport-raknet</artifactId>
+      <version>1.0.0.CR3-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.airlift</groupId>
+      <artifactId>aircompressor</artifactId>
+      <version>0.27</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+</project>
