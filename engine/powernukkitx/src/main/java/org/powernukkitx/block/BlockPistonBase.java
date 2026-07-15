@@ -135,11 +135,30 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         return block instanceof BlockPistonArmCollision b && b.getBlockFace() == face;
     }
 
+    /**
+     * Fork fix: pistons only ever got their required arm block entity from player placement, so
+     * pistons that arrive any other way (setblock, structure/schematic paste, world data) had a
+     * null arm and the update handler bailed out forever -- pasted redstone contraptions had
+     * permanently dead pistons. Create the arm on demand from the block's own state instead.
+     */
+    private BlockEntityPistonArm getOrCreateArm() {
+        var arm = this.getBlockEntity();
+        if (arm == null && this.level != null) {
+            var nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
+                    .putInt("facing", this.getBlockFace().getIndex())
+                    .putBoolean("Sticky", this.sticky)
+                    .putBoolean("powered", false);
+            arm = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM,
+                    this.level.getChunk(getChunkX(), getChunkZ()), nbt);
+        }
+        return arm;
+    }
+
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_REDSTONE || type == Level.BLOCK_UPDATE_MOVED || type == Level.BLOCK_UPDATE_NORMAL) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
-            var arm = this.getBlockEntity();
+            var arm = this.getOrCreateArm();
             if (arm == null) {
                 if (!level.isUpdateScheduled(this, this)) {
                     level.scheduleUpdate(this, 2);
@@ -159,10 +178,7 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!this.level.getServer().getSettings().gameplaySettings().enableRedstone())
                 return 0;
-            // We can't use getOrCreateBlockEntity(), because the update method is called on block place,
-            // before the "real" BlockEntity is set. That means, if we'd use the other method here,
-            // it would create two BlockEntities.
-            var arm = this.getBlockEntity();
+            var arm = this.getOrCreateArm();
             if (arm == null) return 0;
             if (arm.state % 2 != 0) {
                 return type;

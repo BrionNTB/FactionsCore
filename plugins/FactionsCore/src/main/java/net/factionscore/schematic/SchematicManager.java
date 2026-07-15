@@ -105,6 +105,18 @@ public final class SchematicManager {
                     placed++;
                     if (fillDispensers && BlockID.DISPENSER.equals(block.getId())) {
                         fillDispenser(level, pos);
+                    } else {
+                        // Blocks that need a backing block entity (comparators, hoppers, pistons
+                        // handle their own) don't get one from a raw paste; create it so the
+                        // pasted redstone actually functions.
+                        Block placedBlock = level.getBlock(pos);
+                        if (placedBlock instanceof org.powernukkitx.block.BlockEntityHolder<?> holder
+                                && level.getBlockEntity(pos) == null) {
+                            try {
+                                holder.getOrCreateBlockEntity();
+                            } catch (Exception ignored) {
+                            }
+                        }
                     }
                 }
             }

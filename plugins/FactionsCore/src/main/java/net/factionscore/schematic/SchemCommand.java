@@ -48,11 +48,16 @@ public final class SchemCommand extends Command {
                     return true;
                 }
                 org.powernukkitx.block.Block frameMaterial = null;
-                if (args.length > 2) {
-                    String id = args[2].contains(":") ? args[2] : "minecraft:" + args[2].toLowerCase();
+                boolean fillTnt = true;
+                for (int i = 2; i < args.length; i++) {
+                    if (args[i].equalsIgnoreCase("notnt")) {
+                        fillTnt = false;
+                        continue;
+                    }
+                    String id = args[i].contains(":") ? args[i] : "minecraft:" + args[i].toLowerCase();
                     frameMaterial = org.powernukkitx.registry.Registries.BLOCK.get(id);
                     if (frameMaterial == null) {
-                        sender.sendMessage(TextFormat.RED + "Unknown block '" + args[2] + "' -- try cobblestone, obsidian, bedrock...");
+                        sender.sendMessage(TextFormat.RED + "Unknown block '" + args[i] + "' -- try cobblestone, obsidian, bedrock, or 'notnt'.");
                         return true;
                     }
                 }
@@ -72,12 +77,13 @@ public final class SchemCommand extends Command {
                     level = Server.getInstance().getDefaultLevel();
                     corner = level.getSafeSpawn().add(2, 0, 2);
                 }
-                int placed = schematics.paste(structure, level, corner, true, frameMaterial);
+                int placed = schematics.paste(structure, level, corner, fillTnt, frameMaterial);
                 sender.sendMessage(TextFormat.GREEN + "Pasted " + args[1]
                         + (frameMaterial != null ? " in " + frameMaterial.getId().replace("minecraft:", "") : "")
                         + TextFormat.GRAY + " (" + placed
                         + " blocks, corner " + corner.getFloorX() + "," + corner.getFloorY() + "," + corner.getFloorZ()
-                        + ", laid out toward east/south as saved)." + TextFormat.GREEN + " Dispensers come pre-loaded with TNT.");
+                        + ", laid out toward east/south as saved)." + TextFormat.GREEN
+                        + (fillTnt ? " Dispensers come pre-loaded with TNT." : " Dispensers left EMPTY (notnt)."));
                 if (!structure.unresolvedBlocks().isEmpty()) {
                     sender.sendMessage(TextFormat.RED + "Some blocks couldn't be mapped and were skipped: "
                             + structure.unresolvedBlocks());
